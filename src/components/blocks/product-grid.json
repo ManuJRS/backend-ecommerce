@@ -1,0 +1,72 @@
+{
+  "collectionName": "components_blocks_product_grids",
+  "info": {
+    "displayName": "Product Grid",
+    "icon": "grid"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "dataSource": {
+      "type": "enumeration",
+      "default": "all_products",
+      "enum": [
+        "all_products",
+        "by_category",
+        "manual_selection"
+      ]
+    },
+    "category": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::category.category"
+    },
+    "manualProducts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
+    },
+    "showDiscountBadge": {
+      "type": "boolean",
+      "default": true
+    },
+    "badgeFormat": {
+      "type": "enumeration",
+      "default": "percentage",
+      "enum": [
+        "percentage",
+        "amount",
+        "text_only"
+      ]
+    },
+    "itemsLimit": {
+      "type": "integer",
+      "default": 12,
+      "min": 1
+    },
+    "showItemsQuantity": {
+      "type": "boolean",
+      "default": true
+    },
+    "showNewtBadge": {
+      "type": "boolean",
+      "default": true
+    },
+    "showPopularBadge": {
+      "type": "boolean"
+    },
+    "showCalification": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDescription": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

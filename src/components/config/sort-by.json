@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_config_sort_bies",
+  "info": {
+    "displayName": "Sort By",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "showNewest": {
+      "type": "boolean",
+      "default": true
+    },
+    "showHighestPrice": {
+      "type": "boolean",
+      "default": true
+    },
+    "showLowestPrice": {
+      "type": "boolean",
+      "default": true
+    },
+    "showBestSellers": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
