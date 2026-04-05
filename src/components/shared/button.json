@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_shared_buttons",
+  "info": {
+    "displayName": "Button",
+    "icon": "cursor"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "primary",
+        "secondary",
+        "outline"
+      ],
+      "default": "primary"
+    }
+  }
+}

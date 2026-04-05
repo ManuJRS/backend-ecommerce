@@ -1,0 +1,38 @@
+{
+  "kind": "singleType",
+  "collectionName": "store_views",
+  "info": {
+    "singularName": "store-view",
+    "pluralName": "store-views",
+    "displayName": "Store View"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    },
+    "StoreView": {
+      "type": "dynamiczone",
+      "components": [
+        "blocks.dynamic-hero",
+        "blocks.product-grid",
+        "config.store-filters",
+        "config.sort-by"
+      ]
+    }
+  }
+}
