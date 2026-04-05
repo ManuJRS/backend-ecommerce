@@ -67,6 +67,10 @@
     "showDescription": {
       "type": "boolean",
       "default": true
+    },
+    "showFavIcon": {
+      "type": "boolean",
+      "default": true
     }
   }
 }
