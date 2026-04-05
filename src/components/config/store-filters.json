@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_config_store_filters",
+  "info": {
+    "displayName": "Store Filters",
+    "icon": "filter"
+  },
+  "options": {},
+  "attributes": {
+    "priceRange": {
+      "type": "boolean",
+      "default": true
+    },
+    "categories": {
+      "type": "boolean",
+      "default": true
+    },
+    "availability": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
