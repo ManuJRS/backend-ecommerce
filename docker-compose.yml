@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Base de Datos PostgreSQL
+  strapiDB:
+    image: postgres:15-alpine
+    container_name: strapiDB
+    platform: linux/amd64
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - strapi-data:/var/lib/postgresql/data
+    networks:
+      - strapi-network
+    ports:
+      - "5432:5432"
+
+  # Aplicación Strapi
+  strapi:
+    container_name: strapiApp
+    build: .
+    platform: linux/amd64
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_HOST: strapiDB
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - ./config:/opt/app/config
+      - ./src:/opt/app/src
+      - ./package.json:/opt/app/package.json
+      - ./package-lock.json:/opt/app/package-lock.json
+      - ./.env:/opt/app/.env
+      - ./public/uploads:/opt/app/public/uploads
+    networks:
+      - strapi-network
+    ports:
+      - "1337:1337"
+    depends_on:
+      - strapiDB
+
+networks:
+  strapi-network:
+    driver: bridge
+
+volumes:
+  strapi-data:
