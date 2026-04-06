@@ -1,0 +1,13 @@
+{
+  "attributes": {
+    "fullName": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "savedAddresses": {
+      "type": "json"
+    }
+  }
+}
