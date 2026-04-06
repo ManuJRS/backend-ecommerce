@@ -112,3 +112,16 @@ El modelo `Coupon` es el motor de descuentos aplicables en el carrito de compras
 
 * **Flexibilidad Matemática:** Soporta dos tipos de operaciones dinámicas: descuentos por porcentaje (`percentage`, ej: 20% off) o descuentos de monto fijo (`fixed_amount`, ej: -$150 MXN).
 * **Control de Vigencia:** Cuenta con un campo de fecha de expiración (`expiresAt`) y un interruptor manual de activación (`isActive`). El frontend (o el servidor al validar la compra) verifica estos atributos para determinar si el código ingresado por el cliente aún es válido antes de aplicarlo al total del `Order`.
+
+---
+
+## 🛒 Configuración del Carrito y Checkout (Checkout Config)
+El modelo `Checkout Config` (Single Type) funciona como el panel de control central para las operaciones de venta. Permite centralizar la lógica de negocio en el Headless CMS, logrando que el frontend sea dinámico y no requiera nuevos despliegues (deploys) si las reglas comerciales cambian.
+
+* **Reglas Comerciales Dinámicas:** Centraliza variables clave como el monto mínimo de compra requerido para habilitar el pago (`minimumOrderAmount`) y el umbral para ofrecer envíos gratuitos (`freeShippingThreshold`). El frontend consume estos datos para mostrar barras de progreso o bloquear botones automáticamente.
+* **Control de Flujo de Usuario:** Mediante el interruptor `guestCheckoutEnabled`, el administrador puede decidir sobre la marcha si exige a los clientes crear una cuenta o si permite compras como invitado para reducir la fricción.
+* **Gestión de Inventario (Backorders):** Incluye la bandera `allowOutOfStockPurchases` que le indica al frontend cómo comportarse cuando el stock es cero. Permite cambiar dinámicamente la UI (ej. transformar el botón de "Agotado" a "Comprar en Reserva").
+* **Visualización de Precios e Impuestos:** Define el código de moneda (`currencyCode`) y la estrategia de visualización fiscal mediante `taxIncludedInPrice`.
+
+> [!WARNING]
+> **Nota de Arquitectura de Seguridad:** La bandera `taxIncludedInPrice` es estrictamente para lógica de interfaz de usuario (UI), indicándole al frontend si debe desglosar el impuesto visualmente o mostrarlo integrado en el precio de lista. Bajo ninguna circunstancia el frontend calcula los totales de cobro. Para evitar manipulación desde la consola del navegador, todos los cálculos financieros (sumas, aplicación del `taxRate` global de los Global Settings y validación de cupones) son ejecutados de manera segura exclusivamente en el servidor (Strapi) al momento de generar la orden.
