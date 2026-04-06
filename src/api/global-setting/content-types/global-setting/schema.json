@@ -1,0 +1,29 @@
+{
+  "kind": "singleType",
+  "collectionName": "global_settings",
+  "info": {
+    "singularName": "global-setting",
+    "pluralName": "global-settings",
+    "displayName": "Global Settings"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "flatShippingRate": {
+      "type": "decimal",
+      "default": 0
+    },
+    "taxRate": {
+      "type": "decimal",
+      "default": 16
+    },
+    "supportEmail": {
+      "type": "email"
+    },
+    "socialLinks": {
+      "type": "json"
+    }
+  }
+}
