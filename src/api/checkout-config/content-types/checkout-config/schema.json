@@ -1,0 +1,39 @@
+{
+  "kind": "singleType",
+  "collectionName": "checkout_configs",
+  "info": {
+    "singularName": "checkout-config",
+    "pluralName": "checkout-configs",
+    "displayName": "Checkout & Cart Config"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "guestCheckoutEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "minimumOrderAmount": {
+      "type": "decimal",
+      "default": 0
+    },
+    "freeShippingThreshold": {
+      "type": "decimal",
+      "default": 0
+    },
+    "allowOutOfStockPurchases": {
+      "type": "boolean",
+      "default": false
+    },
+    "taxIncludedInPrice": {
+      "type": "boolean",
+      "default": true
+    },
+    "currencyCode": {
+      "type": "string",
+      "default": "MXN"
+    }
+  }
+}

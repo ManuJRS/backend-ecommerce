@@ -86,3 +86,43 @@ Para que tu aplicación Frontend (Vue, React, etc.) pueda consumir el catálogo:
 ```http
 GET http://localhost:1337/api/products?populate=*
 ```
+```
+
+---
+
+## 📦 Módulo de Pedidos (Order)
+El modelo `Order` es el núcleo transaccional del e-commerce. Actúa como un registro inmutable de cada compra realizada.
+
+* **Snapshot de Productos:** En lugar de hacer una relación directa a los productos actuales de la base de datos, el pedido guarda un "snapshot" (una copia en formato JSON) de los productos al momento de la compra. Esto garantiza que si el precio o el nombre de un producto cambia en el futuro, el historial y los recibos de los pedidos pasados no se verán alterados.
+* **Ciclo de Vida del Pago:** Maneja un sistema de estados (`pending`, `paid`, `shipped`, `cancelled`). Los pedidos nacen como `pending` cuando el usuario es redirigido a la pasarela de pago, y cambian a `paid` únicamente a través de una ruta segura (Webhook) que recibe la confirmación silenciosa del proveedor de pagos.
+* **Trazabilidad:** Cada pedido está vinculado al `User` que realizó la compra, almacenando el monto total, el ID de transacción del procesador de pagos y la dirección de envío exacta utilizada en esa transacción.
+
+---
+
+## ⭐ Módulo de Reseñas (Review)
+El modelo `Review` gestiona la prueba social y el feedback de la tienda.
+
+* **Relaciones Dobles:** Funciona como un puente o tabla pivote que conecta a un `User` (el autor) con un `Product` específico del catálogo.
+* **Sistema de Calificación:** Utiliza un sistema estandarizado de calificación de 1 a 5 estrellas (`rating`), acompañado de un comentario en texto libre (`comment`).
+* **Visualización en Frontend:** Esta estructura permite consultar fácilmente todas las reseñas asociadas a un producto (para mostrarlas en su página de detalle) o todas las reseñas escritas por un usuario (para mostrarlas en su panel de perfil).
+
+---
+
+## 🎟️ Módulo de Promociones (Coupon)
+El modelo `Coupon` es el motor de descuentos aplicables en el carrito de compras antes del checkout.
+
+* **Flexibilidad Matemática:** Soporta dos tipos de operaciones dinámicas: descuentos por porcentaje (`percentage`, ej: 20% off) o descuentos de monto fijo (`fixed_amount`, ej: -$150 MXN).
+* **Control de Vigencia:** Cuenta con un campo de fecha de expiración (`expiresAt`) y un interruptor manual de activación (`isActive`). El frontend (o el servidor al validar la compra) verifica estos atributos para determinar si el código ingresado por el cliente aún es válido antes de aplicarlo al total del `Order`.
+
+---
+
+## 🛒 Configuración del Carrito y Checkout (Checkout Config)
+El modelo `Checkout Config` (Single Type) funciona como el panel de control central para las operaciones de venta. Permite centralizar la lógica de negocio en el Headless CMS, logrando que el frontend sea dinámico y no requiera nuevos despliegues (deploys) si las reglas comerciales cambian.
+
+* **Reglas Comerciales Dinámicas:** Centraliza variables clave como el monto mínimo de compra requerido para habilitar el pago (`minimumOrderAmount`) y el umbral para ofrecer envíos gratuitos (`freeShippingThreshold`). El frontend consume estos datos para mostrar barras de progreso o bloquear botones automáticamente.
+* **Control de Flujo de Usuario:** Mediante el interruptor `guestCheckoutEnabled`, el administrador puede decidir sobre la marcha si exige a los clientes crear una cuenta o si permite compras como invitado para reducir la fricción.
+* **Gestión de Inventario (Backorders):** Incluye la bandera `allowOutOfStockPurchases` que le indica al frontend cómo comportarse cuando el stock es cero. Permite cambiar dinámicamente la UI (ej. transformar el botón de "Agotado" a "Comprar en Reserva").
+* **Visualización de Precios e Impuestos:** Define el código de moneda (`currencyCode`) y la estrategia de visualización fiscal mediante `taxIncludedInPrice`.
+
+> [!WARNING]
+> **Nota de Arquitectura de Seguridad:** La bandera `taxIncludedInPrice` es estrictamente para lógica de interfaz de usuario (UI), indicándole al frontend si debe desglosar el impuesto visualmente o mostrarlo integrado en el precio de lista. Bajo ninguna circunstancia el frontend calcula los totales de cobro. Para evitar manipulación desde la consola del navegador, todos los cálculos financieros (sumas, aplicación del `taxRate` global de los Global Settings y validación de cupones) son ejecutados de manera segura exclusivamente en el servidor (Strapi) al momento de generar la orden.
