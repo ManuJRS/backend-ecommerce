@@ -86,7 +86,6 @@ Para que tu aplicación Frontend (Vue, React, etc.) pueda consumir el catálogo:
 ```http
 GET http://localhost:1337/api/products?populate=*
 ```
-```
 
 ---
 
