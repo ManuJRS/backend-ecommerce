@@ -22,16 +22,22 @@
         "videos"
       ]
     },
-    "buttons": {
-      "type": "component",
-      "component": "shared.button",
-      "repeatable": true,
-      "max": 2
-    },
     "tags": {
       "type": "component",
       "component": "shared.tag",
       "repeatable": true
+    },
+    "buttonFullText": {
+      "type": "string"
+    },
+    "buttonFullUrl": {
+      "type": "string"
+    },
+    "buttonOutlineText": {
+      "type": "string"
+    },
+    "buttonOutlineUrl": {
+      "type": "string"
     }
   }
 }

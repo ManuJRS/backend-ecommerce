@@ -53,12 +53,9 @@
       "type": "boolean",
       "default": true
     },
-    "showNewtBadge": {
+    "showCategory": {
       "type": "boolean",
       "default": true
-    },
-    "showPopularBadge": {
-      "type": "boolean"
     },
     "showCalification": {
       "type": "boolean",
