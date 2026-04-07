@@ -22,8 +22,8 @@
     },
     "sku": {
       "type": "string",
-      "unique": true,
-      "required": true
+      "required": true,
+      "unique": true
     },
     "price": {
       "type": "decimal",
@@ -49,6 +49,23 @@
       "relation": "manyToMany",
       "target": "api::category.category",
       "inversedBy": "products"
+    },
+    "discountPercentage": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "max": 100
+    },
+    "discountedPrice": {
+      "type": "decimal"
+    },
+    "newProduct": {
+      "type": "boolean",
+      "default": true
+    },
+    "bestProduct": {
+      "type": "boolean",
+      "default": true
     }
   }
 }
