@@ -6,17 +6,48 @@
   },
   "options": {},
   "attributes": {
+    "filterTitle": {
+      "type": "string"
+    },
+    "filterShortDescription": {
+      "type": "string"
+    },
+    "priceTitle": {
+      "type": "string"
+    },
     "priceRange": {
       "type": "boolean",
       "default": true
+    },
+    "minPrice": {
+      "type": "biginteger",
+      "min": "0"
+    },
+    "maxPrice": {
+      "type": "biginteger",
+      "max": "1000000"
+    },
+    "categoryTitle": {
+      "type": "string"
     },
     "categories": {
       "type": "boolean",
       "default": true
     },
+    "categories_selection": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::category.category"
+    },
+    "availabilityTitle": {
+      "type": "string"
+    },
     "availability": {
       "type": "boolean",
       "default": true
+    },
+    "filterBtn": {
+      "type": "string"
     }
   }
 }
