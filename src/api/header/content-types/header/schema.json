@@ -1,0 +1,53 @@
+{
+  "kind": "singleType",
+  "collectionName": "headers",
+  "info": {
+    "singularName": "header",
+    "pluralName": "headers",
+    "displayName": "header"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "logoSVG": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "logoText": {
+      "type": "string"
+    },
+    "logDisplay": {
+      "type": "enumeration",
+      "enum": [
+        "logo",
+        "text"
+      ]
+    },
+    "navLinks": {
+      "type": "component",
+      "component": "shared.nav-link",
+      "repeatable": true
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": true
+    },
+    "showFavIcon": {
+      "type": "boolean",
+      "default": true
+    },
+    "showCart": {
+      "type": "boolean",
+      "default": true
+    },
+    "showProfileIcon": {
+      "type": "boolean"
+    }
+  }
+}
