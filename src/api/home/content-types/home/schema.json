@@ -1,0 +1,24 @@
+{
+  "kind": "singleType",
+  "collectionName": "homes",
+  "info": {
+    "singularName": "home",
+    "pluralName": "homes",
+    "displayName": "Home"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "homeSection": {
+      "type": "dynamiczone",
+      "components": [
+        "blocks.dynamic-hero"
+      ]
+    }
+  }
+}
