@@ -66,6 +66,13 @@
     "bestProduct": {
       "type": "boolean",
       "default": true
+    },
+    "stockMinAdvice": {
+      "type": "integer"
+    },
+    "stockMinAdviceTitle": {
+      "type": "string",
+      "default": "Disponibles"
     }
   }
 }
