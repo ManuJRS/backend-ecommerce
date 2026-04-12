@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "cart_configs",
+  "info": {
+    "singularName": "cart-config",
+    "pluralName": "cart-configs",
+    "displayName": "Cart config"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "cartModal": {
+      "type": "component",
+      "component": "cart.modal",
+      "repeatable": false,
+      "required": true
+    }
+  }
+}
