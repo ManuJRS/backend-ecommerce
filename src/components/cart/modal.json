@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_cart_modals",
+  "info": {
+    "displayName": "modal"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "revomeBtn": {
+      "type": "string"
+    },
+    "shippingTitle": {
+      "type": "string"
+    },
+    "shippingText": {
+      "type": "string"
+    },
+    "checkoutButtonText": {
+      "type": "string"
+    },
+    "promoText": {
+      "type": "string"
+    },
+    "emptyMessage": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
