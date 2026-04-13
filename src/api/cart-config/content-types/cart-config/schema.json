@@ -11,11 +11,50 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "pageTitle": {
+      "type": "string"
+    },
+    "pageDescription": {
+      "type": "string"
+    },
     "cartModal": {
       "type": "component",
       "component": "cart.modal",
       "repeatable": false,
       "required": true
+    },
+    "summaryTitle": {
+      "type": "string"
+    },
+    "summarySubtotalText": {
+      "type": "string"
+    },
+    "sumaryShippingText": {
+      "type": "string"
+    },
+    "summaryBtnCheckout": {
+      "type": "string"
+    },
+    "summaryMessage": {
+      "type": "string"
+    },
+    "summaryShippingText": {
+      "type": "string"
+    },
+    "summaryTaxText": {
+      "type": "string"
+    },
+    "summaryBadge": {
+      "type": "component",
+      "component": "cart.summary-badge-elements",
+      "repeatable": true
     }
   }
 }
