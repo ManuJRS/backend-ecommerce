@@ -1,0 +1,44 @@
+{
+  "collectionName": "components_cart_checkout_configs",
+  "info": {
+    "displayName": "Checkout Config"
+  },
+  "options": {},
+  "attributes": {
+    "guestCheckoutEnabled": {
+      "type": "boolean"
+    },
+    "minimumOrderAmount": {
+      "type": "integer"
+    },
+    "freeShippingPercentage": {
+      "type": "integer"
+    },
+    "allowOutOfStockPurchases": {
+      "type": "boolean",
+      "default": false
+    },
+    "currencyCode": {
+      "type": "string"
+    },
+    "discountMode": {
+      "type": "enumeration",
+      "default": "N/A",
+      "enum": [
+        "N/A",
+        "discountByQuantity",
+        "discountByAmount"
+      ]
+    },
+    "quantityDiscount": {
+      "type": "integer"
+    },
+    "amountDiscount": {
+      "type": "integer"
+    },
+    "shippingFreeText": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
