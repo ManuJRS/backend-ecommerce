@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_cart_summary_badge_elements",
+  "info": {
+    "displayName": "summaryBadgeElements"
+  },
+  "options": {},
+  "attributes": {
+    "svg": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "badgeText": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
