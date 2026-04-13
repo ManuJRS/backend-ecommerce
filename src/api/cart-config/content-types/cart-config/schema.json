@@ -51,6 +51,42 @@
     "summaryTaxText": {
       "type": "string"
     },
+    "guestCheckoutEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "minimumOrderAmount": {
+      "type": "integer"
+    },
+    "freeShippingPercentage": {
+      "type": "integer"
+    },
+    "allowOutOfStockPurchases": {
+      "type": "boolean"
+    },
+    "currencyCode": {
+      "type": "string"
+    },
+    "discountMode": {
+      "type": "enumeration",
+      "enum": [
+        "N/A",
+        "discountByQuantity",
+        "discountByAmount"
+      ]
+    },
+    "quantityDiscount": {
+      "type": "integer"
+    },
+    "amountDiscount": {
+      "type": "integer"
+    },
+    "shippingFreeText": {
+      "type": "string"
+    },
+    "taxAmount": {
+      "type": "integer"
+    },
     "summaryBadge": {
       "type": "component",
       "component": "cart.summary-badge-elements",
