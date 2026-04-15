@@ -8,5 +8,21 @@ export default {
         auth: false,
       },
     },
+    {
+      method: 'POST',
+      path: '/orders/payment-intent',
+      handler: 'order.createPaymentIntent',
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: 'PUT',
+      path: '/orders/:documentId/address',
+      handler: 'order.updateAddress',
+      config: {
+        auth: false,
+      },
+    },
   ],
 };
