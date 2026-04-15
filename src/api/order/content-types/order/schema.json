@@ -21,13 +21,13 @@
     },
     "status": {
       "type": "enumeration",
+      "default": "pending",
       "enum": [
         "pending",
         "paid",
         "shipped",
         "cancelled"
-      ],
-      "default": "pending"
+      ]
     },
     "paymentId": {
       "type": "string"
@@ -43,6 +43,9 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user"
+    },
+    "paymentStatus": {
+      "type": "string"
     }
   }
 }
