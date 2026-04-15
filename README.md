@@ -125,3 +125,65 @@ El modelo `Checkout Config` (Single Type) funciona como el panel de control cent
 
 > [!WARNING]
 > **Nota de Arquitectura de Seguridad:** La bandera `taxIncludedInPrice` es estrictamente para lógica de interfaz de usuario (UI), indicándole al frontend si debe desglosar el impuesto visualmente o mostrarlo integrado en el precio de lista. Bajo ninguna circunstancia el frontend calcula los totales de cobro. Para evitar manipulación desde la consola del navegador, todos los cálculos financieros (sumas, aplicación del `taxRate` global de los Global Settings y validación de cupones) son ejecutados de manera segura exclusivamente en el servidor (Strapi) al momento de generar la orden.
+
+## 💳 Configuración de Stripe y Webhooks (Entorno Local)
+
+Para que el proceso de checkout funcione correctamente en desarrollo y el backend pueda recibir las confirmaciones de pago de Stripe (cambiando el estatus de las órdenes a `paid`), es obligatorio levantar un túnel local usando **Stripe CLI**.
+
+### 1. Instalación de Stripe CLI (Linux/Ubuntu/Mint)
+
+Si tienes problemas con el repositorio oficial de `apt` (Error 404), instala la herramienta directamente desde los binarios oficiales de GitHub:
+
+```bash
+# 1. Descargar el paquete más reciente (v1.40.5 o superior)
+wget https://github.com/stripe/stripe-cli/releases/download/v1.40.5/stripe_1.40.5_linux_amd64.deb
+
+# 2. Instalar el paquete descargado
+sudo dpkg -i stripe_1.40.5_linux_amd64.deb
+
+# 3. Verificar que se instaló correctamente
+stripe --version
+```
+
+*En Mac o Windows, consulta la [documentación oficial de Stripe CLI](https://stripe.com/docs/stripe-cli).*
+
+### 2. Iniciar sesión
+
+Vincula tu terminal con tu cuenta de Stripe. Esto abrirá una pestaña en tu navegador para autorizar el acceso:
+
+```bash
+stripe login
+```
+
+### 3. Escuchar eventos (el túnel local)
+
+Ejecuta el siguiente comando para reenviar los eventos de Stripe al endpoint de tu Strapi local:
+
+```bash
+stripe listen --forward-to localhost:1337/api/orders/webhook
+```
+
+**Importante:** al ejecutarlo, la terminal mostrará un mensaje similar a:
+
+```text
+Ready! Your webhook signing secret is whsec_12345...
+```
+
+### 4. Configurar variables de entorno
+
+Copia el valor que empieza por `whsec_` y agrégalo a tu archivo `.env` en la raíz del proyecto:
+
+```env
+STRIPE_WEBHOOK_SECRET=whsec_tu_codigo_secreto_aqui
+```
+
+### 5. Reiniciar Strapi
+
+Para que Strapi cargue la variable y pueda validar las firmas, detén el servidor (Ctrl + C) y vuelve a levantarlo:
+
+```bash
+npm run develop
+# o: yarn develop
+```
+
+> **Nota:** Mantén abierta la terminal donde corre `stripe listen` mientras pruebas el checkout en el frontend. Si la cierras, el webhook dejará de llegar a tu Strapi en local.
