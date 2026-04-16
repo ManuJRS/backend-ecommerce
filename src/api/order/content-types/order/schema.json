@@ -32,9 +32,6 @@
     "paymentId": {
       "type": "string"
     },
-    "shippingAddress": {
-      "type": "json"
-    },
     "productsSnapshot": {
       "type": "json",
       "required": true
@@ -46,6 +43,51 @@
     },
     "paymentStatus": {
       "type": "string"
+    },
+    "shippingAmount": {
+      "type": "decimal"
+    },
+    "shippingMethod": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "string",
+      "required": true
+    },
+    "country": {
+      "type": "string",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "required": true
+    },
+    "city": {
+      "type": "string",
+      "required": true
+    },
+    "zipCode": {
+      "type": "string",
+      "required": true
+    },
+    "messageText": {
+      "type": "text"
+    },
+    "marketingOptIn": {
+      "type": "boolean",
+      "required": false
+    },
+    "email": {
+      "type": "email",
+      "required": true
     }
   }
 }
