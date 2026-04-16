@@ -87,10 +87,39 @@
     "taxAmount": {
       "type": "integer"
     },
+    "baseShippingCost": {
+      "type": "decimal"
+    },
     "summaryBadge": {
       "type": "component",
       "component": "cart.summary-badge-elements",
       "repeatable": true
+    },
+    "localShippingCost": {
+      "type": "decimal"
+    },
+    "localZipCodes": {
+      "type": "string"
+    },
+    "enableBaseShipping": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableLocalShipping": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableFreeShipping": {
+      "type": "boolean",
+      "default": true
+    },
+    "fallbackShippingText": {
+      "type": "string",
+      "default": "\"Se calcula después de compra\"*"
+    },
+    "fallbackShippingWarning": {
+      "type": "string",
+      "default": "\"Nos pondremos en contacto con usted para acordar el pago del envío\""
     }
   }
 }

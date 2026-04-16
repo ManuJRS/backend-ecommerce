@@ -25,7 +25,12 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
     console.log('--- NUEVA PETICIÓN DESDE VUE ---');
     console.log('Datos recibidos en el body:', JSON.stringify(ctx.request.body, null, 2));
     console.log('---------------------------------');
-    const { items } = (ctx.request.body as { items?: unknown }) ?? {};
+    const { items, zipCode, shippingAddress, contact } = (ctx.request.body as {
+      items?: unknown;
+      zipCode?: unknown;
+      shippingAddress?: unknown;
+      contact?: unknown;
+    }) ?? {};
 
     if (!Array.isArray(items) || items.length === 0) {
       return ctx.badRequest('Se requiere un arreglo items no vacío');
@@ -48,6 +53,46 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
         return ctx.badRequest('quantity debe ser un entero mayor o igual a 1');
       }
     }
+
+    if (
+      !shippingAddress ||
+      typeof shippingAddress !== 'object' ||
+      Array.isArray(shippingAddress)
+    ) {
+      return ctx.badRequest('Faltan los datos de envío (shippingAddress).');
+    }
+
+    const requiredFields = [
+      'firstName',
+      'lastName',
+      'address',
+      'country',
+      'phone',
+      'city',
+      'zipCode',
+    ] as const;
+    for (const field of requiredFields) {
+      const value = (shippingAddress as Record<string, unknown>)[field];
+      if (value === null || value === undefined) {
+        return ctx.badRequest(`El campo ${field} es obligatorio.`);
+      }
+      const str = typeof value === 'string' ? value : String(value);
+      if (str.trim() === '') {
+        return ctx.badRequest(`El campo ${field} es obligatorio.`);
+      }
+    }
+
+    const contactPayload = contact as { email?: unknown } | null | undefined;
+    if (
+      !contactPayload ||
+      contactPayload.email === undefined ||
+      contactPayload.email === null ||
+      String(contactPayload.email).trim() === ''
+    ) {
+      return ctx.badRequest('El correo electrónico es obligatorio.');
+    }
+
+    const shipZip = String((shippingAddress as Record<string, unknown>).zipCode).trim();
 
     const documentIds = [...new Set(items.map((i) => (i as { documentId: string }).documentId))];
 
@@ -87,10 +132,73 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
         subtotal += unit * line.quantity;
       }
 
-      const cartConfig = await strapi.documents('api::cart-config.cart-config').findFirst();
+      const cartConfig = (await strapi.documents('api::cart-config.cart-config').findFirst()) as any;
       const dynamicTaxRate = cartConfig?.taxAmount ? cartConfig.taxAmount / 100 : 0.12;
 
-      const grandTotal = subtotal * (1 + dynamicTaxRate);
+      const totalItemCount = (items as { quantity: number }[]).reduce(
+        (acc, item) => acc + item.quantity,
+        0
+      );
+
+      // 0. ESTADO POR DEFECTO (Fallback / A convenir)
+      let shippingCost = 0;
+      let shippingMethodText = cartConfig?.fallbackShippingText || 'Envío por calcular';
+
+      // 3. PRIORIDAD BAJA: Envío Base
+      if (cartConfig?.enableBaseShipping) {
+        shippingCost = cartConfig?.baseShippingCost || 0;
+        shippingMethodText = 'Envío Estándar';
+      }
+
+      // 2. PRIORIDAD MEDIA: Envío Local
+      if (
+        cartConfig?.enableLocalShipping &&
+        shipZip !== '' &&
+        cartConfig?.localZipCodes
+      ) {
+        const localZipPrefixes = Array.isArray(cartConfig.localZipCodes)
+          ? cartConfig.localZipCodes.map((code: unknown) => String(code).trim()).filter(Boolean)
+          : String(cartConfig.localZipCodes)
+              .split(',')
+              .map((code) => code.trim())
+              .filter(Boolean);
+
+        const isLocalZip = localZipPrefixes.some((prefix: string) => shipZip.startsWith(prefix));
+
+        if (isLocalZip) {
+          shippingCost = cartConfig?.localShippingCost || 0;
+          shippingMethodText = 'Envío Local';
+        }
+      }
+
+      // 1. PRIORIDAD ALTA: Envío Gratis
+      if (cartConfig?.enableFreeShipping) {
+        if (
+          cartConfig?.discountMode === 'discountByQuantity' &&
+          totalItemCount >= (cartConfig?.quantityDiscount || 0)
+        ) {
+          shippingCost = 0;
+          shippingMethodText = 'Envío Gratis';
+        }
+
+        if (
+          cartConfig?.discountMode === 'discountByAmount' &&
+          subtotal >= (cartConfig?.amountDiscount || 0)
+        ) {
+          shippingCost = 0;
+          shippingMethodText = 'Envío Gratis';
+        }
+      }
+
+      console.log('📦 --- DETECTIVE DE ENVÍOS ---');
+      console.log('1. Subtotal de productos:', subtotal);
+      console.log('2. Cantidad de artículos (totalItemCount):', totalItemCount);
+      console.log('3. Modo de descuento (discountMode):', cartConfig.discountMode);
+      console.log('4. Meta para envío gratis (quantityDiscount):', cartConfig.quantityDiscount);
+      console.log('5. Costo base en DB (baseShippingCost):', cartConfig.baseShippingCost);
+      console.log('6. Costo de envío APLICADO:', shippingCost);
+      console.log('-----------------------------');
+      const grandTotal = (subtotal + shippingCost) * (1 + dynamicTaxRate);
       const amountInCents = Math.round(grandTotal * 100);
 
       if (!Number.isFinite(amountInCents) || amountInCents < 1) {
@@ -113,14 +221,29 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
         };
       });
 
+      const addr = shippingAddress as Record<string, string>;
+      const contactData = contactPayload as { email: string; marketingOptIn?: boolean };
+
       const nuevaOrden = await strapi.documents('api::order.order').create({
         data: {
           orderId: `ORD-${Date.now()}`,
           totalAmount: grandTotal,
+          shippingAmount: shippingCost,
+          shippingMethod: shippingMethodText,
+          firstName: addr.firstName,
+          lastName: addr.lastName,
+          messageText: addr.deliveryInstructions,
+          address: addr.address,
+          country: addr.country,
+          phone: addr.phone,
+          city: addr.city,
+          zipCode: addr.zipCode,
+          email: contactData.email,
+          marketingOptIn: contactData.marketingOptIn === true,
           paymentStatus: 'pending',
           paymentId: paymentIntent.id,
           productsSnapshot: snapshot,
-        }
+        } as any,
       });
 
       ctx.send({
