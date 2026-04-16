@@ -16,6 +16,33 @@ function parseUnitPrice(value: unknown): number {
   return n;
 }
 
+function normalizeOrderSnapshotLines(snapshot: unknown): { documentId: string; quantity: number }[] {
+  if (!Array.isArray(snapshot)) {
+    return [];
+  }
+  const lines: { documentId: string; quantity: number }[] = [];
+  for (const raw of snapshot) {
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+      continue;
+    }
+    const { documentId, quantity } = raw as { documentId?: unknown; quantity?: unknown };
+    if (typeof documentId !== 'string' || documentId.trim() === '') {
+      continue;
+    }
+    const q =
+      typeof quantity === 'number' && Number.isInteger(quantity) && quantity > 0
+        ? quantity
+        : typeof quantity === 'string'
+          ? parseInt(quantity, 10)
+          : NaN;
+    if (!Number.isFinite(q) || q < 1) {
+      continue;
+    }
+    lines.push({ documentId, quantity: q });
+  }
+  return lines;
+}
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2026-03-25.dahlia',
 });
@@ -273,23 +300,47 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
           filters: {
             paymentId: { $eq: paymentIntentId },
           },
-          status: 'draft',
         });
 
         if (order) {
           console.log(`3. ¡Orden encontrada! (Document ID: ${order.documentId}). Actualizando a paid...`);
-          
-          await strapi.documents('api::order.order').update({
-            documentId: order.documentId,
-            data: {
-              paymentStatus: 'paid',
-            } as Record<string, unknown>,
-            paymentStatus: 'draft', 
-          });
+
+          const alreadyPaid =
+            order.paymentStatus === 'paid' || (order as { status?: string }).status === 'paid';
+
+          if (!alreadyPaid) {
+            await strapi.documents('api::order.order').update({
+              documentId: order.documentId,
+              data: {
+                paymentStatus: 'paid',
+                status: 'paid',
+              } as Record<string, unknown>,
+            });
+
+            const items = normalizeOrderSnapshotLines(
+              (order as { productsSnapshot?: unknown }).productsSnapshot
+            );
+
+            for (const item of items) {
+              const product = await strapi.documents('api::product.product').findOne({
+                documentId: item.documentId,
+                status: 'published',
+              });
+              if (product && typeof product.stock === 'number') {
+                await strapi.documents('api::product.product').update({
+                  documentId: item.documentId,
+                  data: {
+                    stock: Math.max(0, product.stock - item.quantity),
+                  } as Record<string, unknown>,
+                  status: 'published',
+                });
+              }
+            }
+          }
 
           console.log('✅ 4. ¡Orden guardada exitosamente!');
         } else {
-          console.log('❌ 3. ERROR: No se encontró la orden ni siquiera en los borradores.');
+          console.log('❌ 3. ERROR: No se encontró la orden con ese paymentId.');
         }
       }
 
