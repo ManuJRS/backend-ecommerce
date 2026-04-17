@@ -121,42 +121,49 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
 
     const shipZip = String((shippingAddress as Record<string, unknown>).zipCode).trim();
 
-    const documentIds = [...new Set(items.map((i) => (i as { documentId: string }).documentId))];
-
     try {
-      const products = await strapi.documents('api::product.product').findMany({
-        filters: {
-          documentId: { $in: documentIds },
-        },
-        fields: ['documentId', 'price', 'discountedPrice'],
-        status: 'published',
-      });
-
       const priceByDocumentId = new Map<string, number>();
-      for (const p of products) {
-        let unit: number;
-        if (p.discountedPrice != null) {
-          const parsedDiscount = parseUnitPrice(p.discountedPrice);
-          unit = parsedDiscount > 0 ? parsedDiscount : parseUnitPrice(p.price);
-        } else {
-          unit = parseUnitPrice(p.price);
-        }
-        priceByDocumentId.set(p.documentId, unit);
-      }
-
-      if (priceByDocumentId.size !== documentIds.length) {
-        return ctx.badRequest(
-          'Uno o más productos no existen o no están publicados'
-        );
-      }
+      const reservedQtyByDocumentId = new Map<string, number>();
 
       let subtotal = 0;
-      for (const line of items as { documentId: string; quantity: number }[]) {
-        const unit = priceByDocumentId.get(line.documentId);
-        if (unit === undefined) {
-          return ctx.badRequest('Producto no encontrado en la base de datos');
+
+      for (const item of items as { documentId: string; quantity: number }[]) {
+        const product = await strapi.documents('api::product.product').findOne({
+          documentId: item.documentId,
+          status: 'published',
+        });
+
+        if (!product) {
+          return ctx.badRequest(`El producto con ID ${item.documentId} no existe.`);
         }
-        subtotal += unit * line.quantity;
+
+        const stockNum =
+          typeof product.stock === 'number' && Number.isFinite(product.stock) ? product.stock : 0;
+
+        const prevQty = reservedQtyByDocumentId.get(item.documentId) ?? 0;
+        const totalRequestedForProduct = prevQty + item.quantity;
+
+        if (stockNum < totalRequestedForProduct) {
+          const p = product as { name?: string; title?: string };
+          return ctx.badRequest('Stock insuficiente', {
+            code: 'INSUFFICIENT_STOCK',
+            productName: p.name || p.title || 'Producto',
+            requested: item.quantity,
+            available: stockNum,
+          });
+        }
+        reservedQtyByDocumentId.set(item.documentId, totalRequestedForProduct);
+
+        let unit: number;
+        if (product.discountedPrice != null) {
+          const parsedDiscount = parseUnitPrice(product.discountedPrice);
+          unit = parsedDiscount > 0 ? parsedDiscount : parseUnitPrice(product.price);
+        } else {
+          unit = parseUnitPrice(product.price);
+        }
+        priceByDocumentId.set(item.documentId, unit);
+
+        subtotal += unit * item.quantity;
       }
 
       const cartConfig = (await strapi.documents('api::cart-config.cart-config').findFirst()) as any;
