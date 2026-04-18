@@ -20,6 +20,11 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       },
     },
   },
+  // Plugin para el dashboard de la tienda
+  'store-dashboard': {
+    enabled: true,
+    resolve: './src/plugins/store-dashboard'
+  },
 });
 
 export default config;
