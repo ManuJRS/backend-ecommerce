@@ -1,0 +1,17 @@
+# Ignorar dependencias locales
+node_modules
+**/node_modules
+
+# Ignorar logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorar archivos de construcción locales (opcional, pero recomendado)
+# Esto obliga a que Docker use su propio proceso de build si así lo decides,
+# aunque para los plugins nosotros seguiremos usando el dist local por ahora.
+build
+.cache
+
+# Archivos de entorno
+.env
