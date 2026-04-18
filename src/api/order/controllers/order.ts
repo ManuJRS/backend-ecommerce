@@ -247,11 +247,22 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
         },
       });
 
+      const productIds = (items as { documentId: string }[]).map(item => item.documentId);
+
+      const productsFromDb = await strapi.documents('api::product.product').findMany({
+        filters: {
+          documentId: { $in: productIds },
+        },
+        fields: ['name', 'documentId'],
+      });
+
       const snapshot = (items as { documentId: string; quantity: number }[]).map((line) => {
+        const productMatch = productsFromDb.find(p => p.documentId === line.documentId);
         return {
           documentId: line.documentId,
           quantity: line.quantity,
           priceAtPurchase: priceByDocumentId.get(line.documentId) || 0,
+          name: productMatch?.name || 'Producto Desconocido',
         };
       });
 
