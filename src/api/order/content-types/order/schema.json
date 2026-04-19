@@ -88,6 +88,10 @@
     "email": {
       "type": "email",
       "required": true
+    },
+    "state": {
+      "type": "string",
+      "required": true
     }
   }
 }

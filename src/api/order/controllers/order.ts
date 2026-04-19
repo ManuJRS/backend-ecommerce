@@ -280,6 +280,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
           messageText: addr.deliveryInstructions,
           address: addr.address,
           country: addr.country,
+          state: addr.state,
           phone: addr.phone,
           city: addr.city,
           zipCode: addr.zipCode,
