@@ -24,7 +24,8 @@ const HomePage = () => {
     avgOrderValue: 0,
     abandonmentRate: 0,
     topCities: [] as any[],
-    topProducts: [] as any[]
+    topProducts: [] as any[],
+    topStates: [] as any[]
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -113,20 +114,35 @@ const HomePage = () => {
               </Tbody>
             </Table>
           </Box>
+          <Flex direction="column" gap={4} alignItems="stretch" style={{ flex: 1, minWidth: 0 }}>
+            <Box padding={6} hasRadius background="neutral0" shadow="tableShadow" width="100%">
+              <Typography variant="beta" as="h2" marginBottom={4}>Top 10 Estados</Typography>
+              <Flex direction="column" alignItems="stretch" gap={2}>
+                {stats.topStates.map((state, i) => (
+                  <Box key={i} padding={3} background="secondary100" hasRadius>
+                    <Flex justifyContent="space-between">
+                      <Typography variant="omega" fontWeight="bold" textColor="secondary700">{state.name}</Typography>
+                      <Typography variant="omega" textColor="secondary700">{state.count} Pedidos</Typography>
+                    </Flex>
+                  </Box>
+                ))}
+              </Flex>
+            </Box>
 
-          <Box padding={6} hasRadius background="neutral0" shadow="tableShadow" style={{ flex: 1 }}>
-            <Typography variant="beta" as="h2" marginBottom={4}>Top Ciudades</Typography>
-            <Flex direction="column" alignItems="stretch" gap={2}>
-              {stats.topCities.map((city, i) => (
-                <Box key={i} padding={3} background="neutral100" hasRadius>
-                  <Flex justifyContent="space-between">
-                    <Typography variant="omega" fontWeight="bold">{city.name}</Typography>
-                    <Typography variant="omega" textColor="neutral600">{city.count}</Typography>
-                  </Flex>
-                </Box>
-              ))}
-            </Flex>
-          </Box>
+            <Box padding={6} hasRadius background="neutral0" shadow="tableShadow" width="100%">
+              <Typography variant="beta" as="h2" marginBottom={4}>Top Ciudades</Typography>
+              <Flex direction="column" alignItems="stretch" gap={2}>
+                {stats.topCities.map((city, i) => (
+                  <Box key={i} padding={3} background="neutral100" hasRadius>
+                    <Flex justifyContent="space-between">
+                      <Typography variant="omega" fontWeight="bold">{city.name}</Typography>
+                      <Typography variant="omega" textColor="neutral600">{city.count}</Typography>
+                    </Flex>
+                  </Box>
+                ))}
+              </Flex>
+            </Box>
+          </Flex>
         </Flex>
       </Box>
     </Main>

@@ -16,8 +16,17 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
       const paidOrdersList = orders.filter((o: any) => o.status?.toLowerCase() === 'paid');
       const paidOrdersCount = paidOrdersList.length;
       const pendingOrdersCount = orders.filter((o: any) => o.status?.toLowerCase() === 'pending').length;
+      const stateMap: Record<string, number> = {};
+      paidOrdersList.forEach((o: any) => {
+        const stateName = o.state?.trim() || 'No especificado';
+        stateMap[stateName] = (stateMap[stateName] || 0) + 1;
+      });
 
       const totalSales = paidOrdersList.reduce((acc, o: any) => acc + (Number(o.totalAmount) || 0), 0);
+      const topStates = Object.entries(stateMap)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10); // Tomamos el Top 10
 
       // --- 2. Ticket Promedio (AOV) ---
       const avgOrderValue = paidOrdersCount > 0 ? totalSales / paidOrdersCount : 0;
@@ -68,6 +77,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
         avgOrderValue: parseFloat(avgOrderValue.toFixed(2)),
         abandonmentRate: parseFloat(abandonmentRate.toFixed(1)),
         topCities,
+        topStates,
         topProducts
       };
     } catch (error) {
