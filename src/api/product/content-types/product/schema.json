@@ -73,6 +73,9 @@
     "stockMinAdviceTitle": {
       "type": "string",
       "default": "Disponibles"
+    },
+    "showRelatedProducts": {
+      "type": "boolean"
     }
   }
 }
