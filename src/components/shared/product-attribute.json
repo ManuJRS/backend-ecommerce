@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_shared_product_attributes",
+  "info": {
+    "displayName": "ProductAttribute",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string"
+    },
+    "name": {
+      "type": "enumeration",
+      "enum": [
+        "Color",
+        "Talla",
+        "Material",
+        "Capacidad",
+        "Dimensiones",
+        "Estilo",
+        "Voltaje",
+        "Acabad",
+        "Sabor",
+        "Aroma"
+      ]
+    }
+  },
+  "config": {}
+}
