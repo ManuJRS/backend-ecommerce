@@ -1,0 +1,60 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_variants",
+  "info": {
+    "singularName": "product-variant",
+    "pluralName": "product-variants",
+    "displayName": "ProductVariant"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "variantSku": {
+      "type": "string",
+      "required": true
+    },
+    "variantName": {
+      "type": "string",
+      "required": true
+    },
+    "variantDiscount": {
+      "type": "decimal"
+    },
+    "variantDescription": {
+      "type": "richtext"
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "stock": {
+      "type": "integer",
+      "required": true,
+      "default": 0
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "variants"
+    },
+    "attribute": {
+      "type": "component",
+      "component": "shared.product-attribute",
+      "repeatable": true
+    },
+    "variantPriceWithDiscount": {
+      "type": "decimal"
+    }
+  }
+}
