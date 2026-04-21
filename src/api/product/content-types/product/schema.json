@@ -76,6 +76,12 @@
     },
     "showRelatedProducts": {
       "type": "boolean"
+    },
+    "variants": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variant.product-variant",
+      "mappedBy": "product"
     }
   }
 }
