@@ -11,12 +11,8 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
-      "type": "string"
-    },
     "slug": {
-      "type": "uid",
-      "targetField": "title"
+      "type": "uid"
     },
     "pageTitle": {
       "type": "string"
@@ -29,9 +25,6 @@
       "component": "cart.modal",
       "repeatable": false,
       "required": true
-    },
-    "summaryTitle": {
-      "type": "string"
     },
     "summarySubtotalText": {
       "type": "string"
