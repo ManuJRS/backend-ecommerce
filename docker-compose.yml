@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Base de Datos PostgreSQL
@@ -25,6 +25,8 @@ services:
     platform: linux/amd64
     env_file: .env
     environment:
+      ENVIOCLICK_API_KEY: ${ENVIOCLICK_API_KEY}
+      ENVIOCLICK_ORIGIN_ZIP: ${ENVIOCLICK_ORIGIN_ZIP}
       DATABASE_CLIENT: ${DATABASE_CLIENT}
       DATABASE_HOST: strapiDB
       DATABASE_PORT: ${DATABASE_PORT}

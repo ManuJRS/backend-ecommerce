@@ -55,6 +55,11 @@
     },
     "variantPriceWithDiscount": {
       "type": "decimal"
+    },
+    "PhysicalData": {
+      "type": "component",
+      "component": "shipping.physical-data",
+      "repeatable": true
     }
   }
 }
