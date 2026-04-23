@@ -82,6 +82,11 @@
       "relation": "oneToMany",
       "target": "api::product-variant.product-variant",
       "mappedBy": "product"
+    },
+    "PhysicalData": {
+      "type": "component",
+      "component": "shipping.physical-data",
+      "repeatable": false
     }
   }
 }
