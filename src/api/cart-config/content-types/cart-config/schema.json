@@ -113,6 +113,9 @@
     "fallbackShippingWarning": {
       "type": "string",
       "default": "\"Nos pondremos en contacto con usted para acordar el pago del envío\""
+    },
+    "enableEnvioclick": {
+      "type": "boolean"
     }
   }
 }

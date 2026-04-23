@@ -92,6 +92,18 @@
     "state": {
       "type": "string",
       "required": true
+    },
+    "rateId": {
+      "type": "string"
+    },
+    "carrier": {
+      "type": "string"
+    },
+    "serviceName": {
+      "type": "string"
+    },
+    "shippingDays": {
+      "type": "string"
     }
   }
 }

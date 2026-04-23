@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shipping_physical_data",
+  "info": {
+    "displayName": "PhysicalData"
+  },
+  "options": {},
+  "attributes": {
+    "weight": {
+      "type": "decimal"
+    },
+    "length": {
+      "type": "decimal"
+    },
+    "width": {
+      "type": "decimal"
+    },
+    "height": {
+      "type": "decimal"
+    }
+  },
+  "config": {}
+}
