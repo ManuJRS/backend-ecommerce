@@ -145,6 +145,42 @@ async function calculateFinalShipping(strapi: any, items: any[], zipCode: string
   return finalRates;
 }
 
+async function updateHibridStock(strapi, items) {
+  for (const item of items) {
+    console.log(`[Stock] Procesando ID: ${item.documentId}`);
+    try {
+      // 1. Intentar como Variante
+      const variant = await strapi.documents('api::product-variant.product-variant').findOne({
+        documentId: item.documentId, status: 'published', fields: ['stock']
+      });
+      if (variant) {
+        await strapi.documents('api::product-variant.product-variant').update({
+          documentId: item.documentId,
+          data: { stock: Math.max(0, (variant.stock || 0) - item.quantity) } as any,
+          status: 'published',
+        });
+        continue;
+      }
+    } catch (e) { /* Fallback a producto simple */ }
+
+    try {
+      // 2. Intentar como Producto Simple
+      const product = await strapi.documents('api::product.product').findOne({
+        documentId: item.documentId, status: 'published', fields: ['stock']
+      });
+      if (product) {
+        await strapi.documents('api::product.product').update({
+          documentId: item.documentId,
+          data: { stock: Math.max(0, (product.stock || 0) - item.quantity) } as any,
+          status: 'published',
+        });
+      }
+    } catch (e) {
+      console.error(`❌ No se pudo actualizar stock para ${item.documentId}`);
+    }
+  }
+}
+
 export default factories.createCoreController('api::order.order', ({ strapi }) => ({
 
 async estimateShipping(ctx) {
@@ -162,20 +198,19 @@ async estimateShipping(ctx) {
   
   // 1. Crear Intento de Pago
   async createPaymentIntent(ctx) {
-    const { items, shippingAddress, contact, shippingRateId } = ctx.request.body as any;
-    // DIAGNÓSTICO DE COLECCIONES
-const uids = Object.keys(strapi.contentTypes);
-console.log('📋 UIDs disponibles en Strapi:', uids.filter(u => u.includes('product')));
+    const { paymentMethod, items, shippingAddress, contact, shippingRateId } = ctx.request.body as any;
+    const uids = Object.keys(strapi.contentTypes);
+    console.log('📋 UIDs disponibles en Strapi:', uids.filter(u => u.includes('product')));
 
-try {
-  // Intento de búsqueda genérica
-  const allVariants = await strapi.documents('api::product-variant.product-variant').findMany({
-    limit: 1
-  });
-  console.log('📊 ¿Hay alguna variante en la DB?:', allVariants.length > 0 ? 'SÍ' : 'NO, LA TABLA ESTÁ VACÍA');
-} catch (e) {
-  console.error('❌ Error crítico al intentar leer la tabla:', e.message);
-}
+    try {
+      // Intento de búsqueda genérica
+      const allVariants = await strapi.documents('api::product-variant.product-variant').findMany({
+        limit: 1
+      });
+      console.log('📊 ¿Hay alguna variante en la DB?:', allVariants.length > 0 ? 'SÍ' : 'NO, LA TABLA ESTÁ VACÍA');
+    } catch (e) {
+      console.error('❌ Error crítico al intentar leer la tabla:', e.message);
+    }
 
     try {
       let subtotal = 0;
@@ -256,6 +291,19 @@ try {
       const grandTotal = (subtotal + shippingCost) * (1 + dynamicTaxRate);
       const amountInCents = Math.round(grandTotal * 100);
 
+      let paymentId = 'transfer_pending';
+      let clientSecret = null;
+
+      if (paymentMethod === 'stripe') {
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: amountInCents,
+          currency: 'mxn',
+          automatic_payment_methods: { enabled: true },
+        });
+        paymentId = paymentIntent.id;
+        clientSecret = paymentIntent.client_secret;
+      }
+
       // 5. Stripe
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amountInCents,
@@ -273,7 +321,8 @@ try {
           totalAmount: grandTotal,
           shippingAmount: shippingData.price,
           shippingMethod: `${shippingData.carrier} - ${shippingData.serviceName}`,
-          paymentStatus: 'pending',
+          paymentStatusList: 'pending',
+          paymentMethod: paymentMethod,
           paymentId: paymentIntent.id,
           productsSnapshot: snapshot,
           firstName: addr.firstName,
@@ -292,6 +341,17 @@ try {
         } as any,
       });
 
+      // 🚀 7. Si es transferencia, descontamos stock de una vez
+      if (paymentMethod === 'transfer') {
+        await updateHibridStock(strapi, items);
+        
+        return ctx.send({
+          documentId: nuevaOrden.documentId,
+          bankDetails: cartConfig?.bankDetails || 'Datos no configurados' // 🚀 Viene de Cart Config
+        });
+      }
+
+      // Respuesta normal para Stripe
       ctx.send({
         clientSecret: paymentIntent.client_secret,
         documentId: nuevaOrden.documentId
@@ -306,72 +366,61 @@ try {
   // 2. Webhook de Stripe
   async confirmPayment(ctx) {
     const event = ctx.request.body as any;
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentId = event.data.object.id;
-      const order = await strapi.documents('api::order.order').findFirst({
-        filters: { paymentId },
-      });
 
-      if (order && order.paymentStatus !== 'paid') {
-        await strapi.documents('api::order.order').update({
-          documentId: order.documentId,
-          data: { paymentStatus: 'paid', status: 'paid' } as any,
-        });
+    try {
+      if (event?.type === 'payment_intent.succeeded') {
+        const paymentIntent = event?.data?.object;
+        const stripePaymentId = paymentIntent?.id;
+        const meta = paymentIntent?.metadata ?? {};
+        const orderDocumentIdFromMeta = meta?.documentId;
 
-        // Descontar stock de variantes
-        const items = normalizeOrderSnapshotLines(order.productsSnapshot);
-          for (const item of items) {
-            console.log(`[confirmPayment stock] Procesando descuento para ID: ${item.documentId}`);
-            
-            let updatedVariant = false;
+        console.log('[confirmPayment] paymentIntent.id (Stripe)', stripePaymentId);
+        console.log('[confirmPayment] metadata (Stripe)', meta);
+        console.log(
+          '[confirmPayment] orderDocumentId desde metadata.documentId',
+          orderDocumentIdFromMeta ?? '(no enviado)'
+        );
 
-            // 1. Intentar actualizar como Variante
-            try {
-              const variant = await strapi.documents('api::product-variant.product-variant').findOne({
-                documentId: item.documentId,
-                status: 'published',
-                fields: ['stock']
-              });
+        if (!stripePaymentId) {
+          strapi.log.warn('[confirmPayment] payment_intent.succeeded sin paymentIntent.id');
+        } else {
+          let order: any = null;
+          try {
+            order = await strapi.documents('api::order.order').findFirst({
+              filters: { paymentId: stripePaymentId },
+            });
+          } catch (error) {
+            strapi.log.error(
+              `[confirmPayment] Error al buscar orden por paymentId: ${error instanceof Error ? error.message : 'desconocido'}`
+            );
+          }
 
-              if (variant) {
-                await strapi.documents('api::product-variant.product-variant').update({
-                  documentId: item.documentId,
-                  data: { stock: Math.max(0, (variant.stock || 0) - item.quantity) } as any,
-                  status: 'published',
-                });
-                console.log(`✅ Stock actualizado en tabla Variant para: ${item.documentId}`);
-                updatedVariant = true;
+          if (!order) {
+            strapi.log.warn(`[confirmPayment] Orden no encontrada para paymentId=${stripePaymentId}`);
+          } else if (order.paymentStatusList === 'paid') {
+            console.log(
+              '[confirmPayment] Orden ya en paid (idempotente), documentId:',
+              order.documentId
+            );
+          } else {
+            await strapi.documents('api::order.order').update({
+              documentId: order.documentId,
+              data: { paymentStatusList: 'paid' } as any,
+            });
+
+            if (order.paymentMethod === 'stripe') {
+              const items = normalizeOrderSnapshotLines(order.productsSnapshot);
+              if (items.length > 0) {
+                await updateHibridStock(strapi, items);
               }
-            } catch (err) {
-              // Silencioso si no encuentra la variante
-            }
-
-            if (updatedVariant) continue;
-
-            // 2. Si no fue variante, intentar actualizar como Producto Simple
-            try {
-              const product = await strapi.documents('api::product.product').findOne({
-                documentId: item.documentId,
-                status: 'published',
-                fields: ['stock']
-              });
-
-              if (product) {
-                await strapi.documents('api::product.product').update({
-                  documentId: item.documentId,
-                  data: { stock: Math.max(0, (product.stock || 0) - item.quantity) } as any,
-                  status: 'published',
-                });
-                console.log(`✅ Stock actualizado en tabla Product para: ${item.documentId}`);
-              } else {
-                console.warn(`⚠️ No se pudo descontar stock: ID ${item.documentId} no encontrado en ninguna tabla.`);
-              }
-            } catch (err) {
-              console.warn(`⚠️ Error al buscar/descontar producto simple ID ${item.documentId}`);
             }
           }
+        }
       }
+    } catch (err) {
+      strapi.log.error(err);
     }
+
     return ctx.send({ received: true });
   },
 
@@ -390,7 +439,7 @@ try {
       if (!order) return ctx.notFound('Orden no encontrada');
       
       // Validar que la orden no haya sido pagada
-      if (order.paymentStatus === 'paid' || order.status === 'paid') {
+      if (order.paymentStatusList === 'paid') {
           return ctx.badRequest('No se puede modificar la dirección de una orden ya pagada.');
       }
 
