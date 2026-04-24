@@ -41,8 +41,20 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user"
     },
-    "paymentStatus": {
-      "type": "string"
+    "paymentStatusList": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid",
+        "canceled"
+      ]
+    },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": [
+        "stripe",
+        "transfer"
+      ]
     },
     "shippingAmount": {
       "type": "decimal"
