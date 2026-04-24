@@ -116,6 +116,9 @@
     },
     "enableEnvioclick": {
       "type": "boolean"
+    },
+    "bankDetails": {
+      "type": "richtext"
     }
   }
 }
