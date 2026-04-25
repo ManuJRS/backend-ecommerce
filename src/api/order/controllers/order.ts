@@ -252,6 +252,10 @@ async estimateShipping(ctx) {
 
       // 2. Obtener configuración del carrito (Impuestos y Envío)
       const cartConfig = (await strapi.documents('api::cart-config.cart-config').findFirst()) as any;
+
+      if (paymentMethod === 'transfer' && !cartConfig.allowBankTransfer) {
+        return ctx.badRequest('Las transferencias bancarias no están disponibles en este momento.');
+      }
       
       // 🚀 DEFINICIÓN DE dynamicTaxRate
       const dynamicTaxRate = cartConfig?.taxAmount ? cartConfig.taxAmount / 100 : 0.16; // 16% IVA por defecto en MX
