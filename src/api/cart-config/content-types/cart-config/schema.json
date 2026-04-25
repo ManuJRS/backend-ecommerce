@@ -117,6 +117,12 @@
     "enableEnvioclick": {
       "type": "boolean"
     },
+    "BankTransferTitle": {
+      "type": "string"
+    },
+    "allowBankTransfer": {
+      "type": "boolean"
+    },
     "bankDetails": {
       "type": "richtext"
     }
