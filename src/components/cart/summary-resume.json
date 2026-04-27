@@ -1,0 +1,40 @@
+{
+  "collectionName": "components_cart_summary_resumes",
+  "info": {
+    "displayName": "summaryResume",
+    "icon": "cup"
+  },
+  "options": {},
+  "attributes": {
+    "summarySubtotalText": {
+      "type": "string"
+    },
+    "sumaryShippingText": {
+      "type": "string"
+    },
+    "summaryBtnCheckout": {
+      "type": "string"
+    },
+    "summaryMessage": {
+      "type": "string"
+    },
+    "summaryBadge": {
+      "type": "component",
+      "component": "cart.summary-badge-elements",
+      "repeatable": true
+    },
+    "summaryShippingText": {
+      "type": "string"
+    },
+    "summaryTaxText": {
+      "type": "string"
+    },
+    "fallbackShippingText": {
+      "type": "string"
+    },
+    "fallbackShippingWarning": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
