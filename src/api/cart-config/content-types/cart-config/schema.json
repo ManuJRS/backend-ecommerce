@@ -26,23 +26,11 @@
       "repeatable": false,
       "required": true
     },
-    "summarySubtotalText": {
-      "type": "string"
-    },
-    "sumaryShippingText": {
-      "type": "string"
-    },
-    "summaryBtnCheckout": {
-      "type": "string"
-    },
-    "summaryMessage": {
-      "type": "string"
-    },
-    "summaryShippingText": {
-      "type": "string"
-    },
-    "summaryTaxText": {
-      "type": "string"
+    "SummaryResume": {
+      "type": "component",
+      "component": "cart.summary-resume",
+      "repeatable": false,
+      "required": true
     },
     "guestCheckoutEnabled": {
       "type": "boolean",
@@ -60,33 +48,11 @@
     "currencyCode": {
       "type": "string"
     },
-    "discountMode": {
-      "type": "enumeration",
-      "enum": [
-        "N/A",
-        "discountByQuantity",
-        "discountByAmount"
-      ]
-    },
-    "quantityDiscount": {
-      "type": "integer"
-    },
-    "amountDiscount": {
-      "type": "integer"
-    },
-    "shippingFreeText": {
-      "type": "string"
-    },
     "taxAmount": {
       "type": "integer"
     },
     "baseShippingCost": {
       "type": "decimal"
-    },
-    "summaryBadge": {
-      "type": "component",
-      "component": "cart.summary-badge-elements",
-      "repeatable": true
     },
     "localShippingCost": {
       "type": "decimal"
@@ -106,14 +72,6 @@
       "type": "boolean",
       "default": true
     },
-    "fallbackShippingText": {
-      "type": "string",
-      "default": "\"Se calcula después de compra\"*"
-    },
-    "fallbackShippingWarning": {
-      "type": "string",
-      "default": "\"Nos pondremos en contacto con usted para acordar el pago del envío\""
-    },
     "enableEnvioclick": {
       "type": "boolean"
     },
@@ -125,6 +83,12 @@
     },
     "bankDetails": {
       "type": "richtext"
+    },
+    "shippingConfiguration": {
+      "type": "component",
+      "component": "cart.shipping-configuration",
+      "repeatable": false,
+      "required": true
     }
   }
 }
