@@ -23,22 +23,23 @@ function normalizeOrderSnapshotLines(snapshot: unknown): { documentId: string; q
 
 async function calculateFinalShipping(strapi: any, items: any[], zipCode: string, config: any, subtotal: number): Promise<any[]> {
   let finalRates: any[] = [];
+  const shipCfg = config?.shippingConfiguration ?? {};
 
-  // 1. VALIDACIÓN DE ENVÍO GRATIS
+  // 1. VALIDACIÓN DE ENVÍO GRATIS (reglas en componente shippingConfiguration)
   let isFreeShipping = false;
   const totalQuantity = items.reduce((acc: number, item: any) => acc + Math.max(0, Number(item.quantity) || 0), 0);
 
-  if (config.discountMode === 'discountByQuantity') {
-    if (totalQuantity >= (Number(config.quantityDiscount) || 0)) isFreeShipping = true;
-  } else if (config.discountMode === 'discountByAmount') {
-    if (Number(subtotal) >= (Number(config.amountDiscount) || 0)) isFreeShipping = true;
+  if (shipCfg.discountMode === 'discountByQuantity') {
+    if (totalQuantity >= (Number(shipCfg.quantityDiscount) || 0)) isFreeShipping = true;
+  } else if (shipCfg.discountMode === 'discountByAmount') {
+    if (Number(subtotal) >= (Number(shipCfg.amountDiscount) || 0)) isFreeShipping = true;
   }
 
   if (isFreeShipping) {
     return [{
-      id: 'free_shipping',
+      id: 'free-shipping',
       carrier: 'Promoción',
-      service: config.shippingFreeText || 'Envío Gratis',
+      service: shipCfg.shippingFreeText || 'Envío Gratis',
       price: 0,
       days: '3-7'
     }];
@@ -183,11 +184,14 @@ async function updateHibridStock(strapi, items) {
 
 export default factories.createCoreController('api::order.order', ({ strapi }) => ({
 
-async estimateShipping(ctx) {
-    const { items, zipCode, subtotal } = ctx.request.body;
-
+  async estimateShipping(ctx) {
+    const { items, zipCode, subtotal } = ctx.request.body; 
+  
     try {
-      const config = await strapi.documents('api::cart-config.cart-config').findFirst() as any;
+      const config = await strapi.documents('api::cart-config.cart-config').findFirst({
+        populate: ['shippingConfiguration'] // 👈 Agregamos el populate para las reglas
+      }) as any;
+  
       const finalRates = await calculateFinalShipping(strapi, items, zipCode, config, subtotal);
       
       return ctx.send(finalRates);
@@ -213,80 +217,138 @@ async estimateShipping(ctx) {
     }
 
     try {
-      let subtotal = 0;
-      const priceByDocumentId = new Map<string, number>();
+      if (!Array.isArray(items) || items.length === 0) {
+        return ctx.badRequest('Faltan productos en el pedido.');
+      }
+
+      const subtotal = (items as { price: unknown; quantity: unknown }[]).reduce(
+        (acc, item) => acc + Number(item.price) * Number(item.quantity),
+        0
+      );
+
+      if (!Number.isFinite(subtotal) || subtotal < 0) {
+        return ctx.badRequest('Subtotal inválido: verifica price y quantity en cada ítem.');
+      }
+
+      // 2. Configuración del carrito (envío: shippingConfiguration)
+      const cartConfig = (await strapi.documents('api::cart-config.cart-config').findFirst({
+        populate: ['shippingConfiguration', 'SummaryResume'],
+      })) as any;
+
+      const shipCfg = cartConfig?.shippingConfiguration ?? {};
+
+      if (paymentMethod === 'transfer' && !cartConfig?.allowBankTransfer) {
+        return ctx.badRequest('Las transferencias bancarias no están disponibles en este momento.');
+      }
+
+      if (shippingRateId === 'free-shipping' || shippingRateId === 'free_shipping') {
+        if (shipCfg.discountMode === 'N/A' || !shipCfg.discountMode) {
+          return ctx.badRequest('Envío gratis no está activo en la configuración actual.');
+        }
+        if (shipCfg.discountMode === 'discountByAmount') {
+          const threshold = Number(shipCfg.amountDiscount) || 0;
+          if (subtotal < threshold) {
+            return ctx.badRequest('El subtotal no alcanza el monto configurado para envío gratis.');
+          }
+        } else if (shipCfg.discountMode === 'discountByQuantity') {
+          const qty = (items as { quantity: unknown }[]).reduce(
+            (a, it) => a + Math.max(0, Number(it.quantity) || 0),
+            0
+          );
+          const threshold = Number(shipCfg.quantityDiscount) || 0;
+          if (qty < threshold) {
+            return ctx.badRequest('La cantidad de artículos no alcanza el mínimo para envío gratis.');
+          }
+        }
+      }
+
+      if (shippingRateId === 'base-shipping') {
+        if (!cartConfig?.enableBaseShipping) {
+          return ctx.badRequest('La tarifa base no está habilitada en la configuración.');
+        }
+        // Validamos que el costo sea un número válido
+        if (typeof cartConfig.baseShippingCost !== 'number') {
+          return ctx.badRequest('El costo de envío base no está configurado correctamente.');
+        }
+      }
+
       const nameByDocumentId = new Map<string, string>();
 
-      // 1. Procesar items y calcular subtotal
-    for (const item of items as { documentId: string; quantity: number }[]) {
-      console.log(`[createPaymentIntent] Buscando DocumentID: ${item.documentId}`);
+      for (const item of items as { documentId: string; quantity: number }[]) {
+        console.log(`[createPaymentIntent] Buscando DocumentID: ${item.documentId}`);
 
-      let productData = await (strapi.documents('api::product-variant.product-variant' as any)).findOne({
-        documentId: item.documentId,
-        status: 'published',
-        locale: 'all',
-        fields: ['price', 'variantName'] as any,
-        populate: { PhysicalData: true } as any
-      }) as any;
-
-      if (!productData) {
-        productData = await (strapi.documents('api::product.product' as any)).findOne({
+        let productData = await (strapi.documents('api::product-variant.product-variant' as any)).findOne({
           documentId: item.documentId,
           status: 'published',
           locale: 'all',
-          fields: ['price', 'name'] as any,
-          populate: { PhysicalData: true } as any
+          fields: ['variantName'] as any,
+          populate: { PhysicalData: true } as any,
         }) as any;
+
+        if (!productData) {
+          productData = await (strapi.documents('api::product.product' as any)).findOne({
+            documentId: item.documentId,
+            status: 'published',
+            locale: 'all',
+            fields: ['name'] as any,
+            populate: { PhysicalData: true } as any,
+          }) as any;
+        }
+
+        if (!productData) {
+          console.error(`❌ ERROR: El documento ${item.documentId} no existe en product-variant ni en product.`);
+          throw new Error(`Producto no encontrado con ID: ${item.documentId}`);
+        }
+
+        nameByDocumentId.set(item.documentId, productData.variantName || productData.name || 'Desconocido');
       }
 
-      if (!productData) {
-        console.error(`❌ ERROR: El documento ${item.documentId} no existe en product-variant ni en product.`);
-        throw new Error(`Producto no encontrado con ID: ${item.documentId}`);
-      }
+      const dynamicTaxRate = cartConfig?.taxAmount ? cartConfig.taxAmount / 100 : 0.16;
 
-      const unitPrice = parseUnitPrice(productData.price);
-      subtotal += unitPrice * Math.max(0, item.quantity);
-      priceByDocumentId.set(item.documentId, unitPrice);
-      nameByDocumentId.set(item.documentId, productData.variantName || productData.name || 'Desconocido');
-    }
-
-      // 2. Obtener configuración del carrito (Impuestos y Envío)
-      const cartConfig = (await strapi.documents('api::cart-config.cart-config').findFirst()) as any;
-
-      if (paymentMethod === 'transfer' && !cartConfig.allowBankTransfer) {
-        return ctx.badRequest('Las transferencias bancarias no están disponibles en este momento.');
-      }
-      
-      // 🚀 DEFINICIÓN DE dynamicTaxRate
-      const dynamicTaxRate = cartConfig?.taxAmount ? cartConfig.taxAmount / 100 : 0.16; // 16% IVA por defecto en MX
-
-      // 🚀 Zero Trust: Recalcular costo de envío en backend basado en rateId y CP real
       const zipCode = shippingAddress?.zipCode || '';
       const finalRates = await calculateFinalShipping(strapi, items, zipCode, cartConfig, subtotal);
       
-      const selectedRate = finalRates.find((r) => r.id === shippingRateId);
+      const selectedRate = finalRates.find(
+        (r) =>
+          r.id === shippingRateId ||
+          (r.id === 'free-shipping' && shippingRateId === 'free_shipping')
+      );
       
-      if (!selectedRate && finalRates.length > 0) {
+      
+let shippingCost = 0;
+      let shippingData = {
+        rateId: String(shippingRateId),
+        carrier: 'Envío Estándar',
+        serviceName: 'Tarifa Fija',
+        days: '3-5',
+        price: 0
+      };
+
+      if (selectedRate) {
+        shippingCost = Number(selectedRate.price);
+        shippingData = {
+          rateId: String(selectedRate.id),
+          carrier: selectedRate.carrier,
+          serviceName: selectedRate.service,
+          days: String(selectedRate.days || '3-5'),
+          price: shippingCost
+        };
+      } else if (shippingRateId === 'base-shipping') {
+        // Asignamos los valores directamente desde cart-config
+        shippingCost = Number(cartConfig.baseShippingCost);
+        shippingData.price = shippingCost;
+        shippingData.carrier = 'Envío Nacional';
+        shippingData.serviceName = 'Tarifa Base';
+      } else if (finalRates.length > 0) {
         return ctx.badRequest('Tarifa de envío seleccionada no es válida o faltante.');
       }
-
-      const shippingCost = selectedRate ? Number(selectedRate.price) : 0;
-
-      const shippingData = {
-        rateId: String(selectedRate?.id || 'manual'),
-        carrier: selectedRate?.carrier || (shippingRateId === 'local_delivery' ? 'Entrega Local' : 'Envío Estándar'),
-        serviceName: selectedRate?.service || (shippingRateId === 'local_delivery' ? 'Reparto a domicilio (Mérida)' : 'Tarifa fija nacional'),
-        days: String(selectedRate?.days || '3-5'),
-        price: Number(selectedRate?.price ?? shippingCost)
-      };
       
 
-      // 3. Crear el Snapshot para la orden
-      const snapshot = (items as { documentId: string; quantity: number }[]).map((line) => {
+      const snapshot = (items as { documentId: string; quantity: number; price: unknown }[]).map((line) => {
         return {
           documentId: line.documentId,
           quantity: line.quantity,
-          priceAtPurchase: priceByDocumentId.get(line.documentId) || 0,
+          priceAtPurchase: parseUnitPrice(line.price),
           name: nameByDocumentId.get(line.documentId) || 'Desconocido',
         };
       });
@@ -308,13 +370,6 @@ async estimateShipping(ctx) {
         clientSecret = paymentIntent.client_secret;
       }
 
-      // 5. Stripe
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: amountInCents,
-        currency: 'mxn',
-        automatic_payment_methods: { enabled: true },
-      });
-
       // 6. Crear la Orden con todos los campos requeridos
       const addr = shippingAddress as Record<string, any>;
       const contactData = contact as Record<string, any>;
@@ -327,7 +382,7 @@ async estimateShipping(ctx) {
           shippingMethod: `${shippingData.carrier} - ${shippingData.serviceName}`,
           paymentStatusList: 'pending',
           paymentMethod: paymentMethod,
-          paymentId: paymentIntent.id,
+          paymentId,
           productsSnapshot: snapshot,
           firstName: addr.firstName,
           lastName: addr.lastName,
@@ -351,14 +406,13 @@ async estimateShipping(ctx) {
         
         return ctx.send({
           documentId: nuevaOrden.documentId,
-          bankDetails: cartConfig?.bankDetails || 'Datos no configurados' // 🚀 Viene de Cart Config
+          bankDetails: cartConfig?.bankDetails || 'Datos no configurados'
         });
       }
 
-      // Respuesta normal para Stripe
       ctx.send({
-        clientSecret: paymentIntent.client_secret,
-        documentId: nuevaOrden.documentId
+        clientSecret,
+        documentId: nuevaOrden.documentId,
       });
 
     } catch (err) {
