@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_cart_tax_and_currencies",
+  "info": {
+    "displayName": "taxAndCurrency",
+    "icon": "arrowUp"
+  },
+  "options": {},
+  "attributes": {
+    "currencyCode": {
+      "type": "string"
+    },
+    "taxAmount": {
+      "type": "integer"
+    },
+    "currencySymbol": {
+      "type": "string"
+    },
+    "taxLabel": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_cart_shipping_methods",
+  "info": {
+    "displayName": "shippingMethods",
+    "icon": "plane"
+  },
+  "options": {},
+  "attributes": {
+    "enableBaseShipping": {
+      "type": "boolean"
+    },
+    "baseShippingCost": {
+      "type": "decimal"
+    },
+    "enableLocalShipping": {
+      "type": "boolean"
+    },
+    "localZipCodes": {
+      "type": "string"
+    },
+    "localShippingCost": {
+      "type": "decimal"
+    },
+    "enableEnvioclick": {
+      "type": "boolean"
+    },
+    "allowBankTransfer": {
+      "type": "boolean"
+    },
+    "BankTransferTitle": {
+      "type": "string"
+    },
+    "bankDetails": {
+      "type": "richtext"
+    }
+  },
+  "config": {}
+}
