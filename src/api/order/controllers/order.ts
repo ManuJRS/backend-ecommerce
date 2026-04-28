@@ -46,9 +46,9 @@ async function calculateFinalShipping(strapi: any, items: any[], zipCode: string
   }
 
   // 2. TARIFA LOCAL
-  const isLocalEnabled = config.enableLocalShipping === true;
+  const isLocalEnabled = config?.shippingMethods?.enableLocalShipping === true;
   const cleanZip = String(zipCode || '').trim();
-  const allowedPrefixes = config.localZipCodes?.split(',').map((z: string) => z.trim()) || [];
+  const allowedPrefixes = config?.shippingMethods?.localZipCodes?.split(',').map((z: string) => z.trim()) || [];
   const isMatch = allowedPrefixes.some((prefix: string) => cleanZip.startsWith(prefix));
 
   if (isLocalEnabled && isMatch) {
@@ -56,13 +56,13 @@ async function calculateFinalShipping(strapi: any, items: any[], zipCode: string
       id: 'local_delivery',
       carrier: 'Entrega Local',
       service: 'Reparto a domicilio (Mérida)',
-      price: Number(config.localShippingCost || 0),
+      price: Number(config?.shippingMethods?.localShippingCost || 0),
       days: '1-2'
     });
   }
 
   // 3. ENVIOCLICK API
-  if (config.enableEnvioclick) {
+  if (config?.shippingMethods?.enableEnvioclick) {
     try {
       let totalWeight = 0, packageHeight = 0, maxWidth = 0, maxLength = 0;
         for (const item of items) {
@@ -133,12 +133,12 @@ async function calculateFinalShipping(strapi: any, items: any[], zipCode: string
   }
 
   // 4. TARIFA NACIONAL FIJA
-  if (finalRates.length === 0 && config.enableBaseShipping) {
+  if (finalRates.length === 0 && config.shippingMethods?.enableBaseShipping) {
     finalRates.push({
       id: 'standard_shipping',
       carrier: 'Envío Estándar',
       service: 'Tarifa nacional fija',
-      price: Number(config.baseShippingCost || 0),
+      price: Number(config.shippingMethods?.baseShippingCost || 0),
       days: '3-5'
     });
   }
@@ -189,7 +189,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
   
     try {
       const config = await strapi.documents('api::cart-config.cart-config').findFirst({
-        populate: ['shippingConfiguration'] // 👈 Agregamos el populate para las reglas
+        populate: ['shippingConfiguration', 'shippingMethods', 'taxAndCurrency'] // 👈 Agregamos el populate para las reglas
       }) as any;
   
       const finalRates = await calculateFinalShipping(strapi, items, zipCode, config, subtotal);
@@ -237,7 +237,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
 
       const shipCfg = cartConfig?.shippingConfiguration ?? {};
 
-      if (paymentMethod === 'transfer' && !cartConfig?.allowBankTransfer) {
+      if (paymentMethod === 'transfer' && !cartConfig?.shippingMethods?.allowBankTransfer) {
         return ctx.badRequest('Las transferencias bancarias no están disponibles en este momento.');
       }
 
@@ -263,11 +263,11 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
       }
 
       if (shippingRateId === 'base-shipping') {
-        if (!cartConfig?.enableBaseShipping) {
+        if (!cartConfig?.shippingMethods?.enableBaseShipping) {
           return ctx.badRequest('La tarifa base no está habilitada en la configuración.');
         }
         // Validamos que el costo sea un número válido
-        if (typeof cartConfig.baseShippingCost !== 'number') {
+        if (typeof cartConfig?.shippingMethods?.baseShippingCost !== 'number') {
           return ctx.badRequest('El costo de envío base no está configurado correctamente.');
         }
       }
@@ -303,7 +303,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
         nameByDocumentId.set(item.documentId, productData.variantName || productData.name || 'Desconocido');
       }
 
-      const dynamicTaxRate = cartConfig?.taxAmount ? cartConfig.taxAmount / 100 : 0.16;
+      const dynamicTaxRate = cartConfig?.taxAndCurrency?.taxRate ? cartConfig.taxAndCurrency.taxRate / 100 : 0.16;
 
       const zipCode = shippingAddress?.zipCode || '';
       const finalRates = await calculateFinalShipping(strapi, items, zipCode, cartConfig, subtotal);
@@ -335,7 +335,7 @@ let shippingCost = 0;
         };
       } else if (shippingRateId === 'base-shipping') {
         // Asignamos los valores directamente desde cart-config
-        shippingCost = Number(cartConfig.baseShippingCost);
+        shippingCost = Number(cartConfig?.shippingMethods?.baseShippingCost);
         shippingData.price = shippingCost;
         shippingData.carrier = 'Envío Nacional';
         shippingData.serviceName = 'Tarifa Base';
@@ -406,7 +406,7 @@ let shippingCost = 0;
         
         return ctx.send({
           documentId: nuevaOrden.documentId,
-          bankDetails: cartConfig?.bankDetails || 'Datos no configurados'
+          bankDetails: cartConfig?.shippingMethods?.bankDetails || 'Datos no configurados'
         });
       }
 
