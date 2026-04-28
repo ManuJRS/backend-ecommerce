@@ -4,7 +4,7 @@
   "info": {
     "singularName": "cart-config",
     "pluralName": "cart-configs",
-    "displayName": "Cart config"
+    "displayName": "Store Config"
   },
   "options": {
     "draftAndPublish": true
@@ -36,57 +36,21 @@
       "type": "boolean",
       "default": true
     },
-    "minimumOrderAmount": {
-      "type": "integer"
-    },
-    "freeShippingPercentage": {
-      "type": "integer"
-    },
-    "allowOutOfStockPurchases": {
-      "type": "boolean"
-    },
-    "currencyCode": {
-      "type": "string"
-    },
-    "taxAmount": {
-      "type": "integer"
-    },
-    "baseShippingCost": {
-      "type": "decimal"
-    },
-    "localShippingCost": {
-      "type": "decimal"
-    },
-    "localZipCodes": {
-      "type": "string"
-    },
-    "enableBaseShipping": {
-      "type": "boolean",
-      "default": true
-    },
-    "enableLocalShipping": {
-      "type": "boolean",
-      "default": true
-    },
-    "enableFreeShipping": {
-      "type": "boolean",
-      "default": true
-    },
-    "enableEnvioclick": {
-      "type": "boolean"
-    },
-    "BankTransferTitle": {
-      "type": "string"
-    },
-    "allowBankTransfer": {
-      "type": "boolean"
-    },
-    "bankDetails": {
-      "type": "richtext"
-    },
     "shippingConfiguration": {
       "type": "component",
       "component": "cart.shipping-configuration",
+      "repeatable": false,
+      "required": true
+    },
+    "shippingMethods": {
+      "type": "component",
+      "component": "cart.shipping-methods",
+      "repeatable": false,
+      "required": true
+    },
+    "taxAndCurrency": {
+      "type": "component",
+      "component": "cart.tax-and-currency",
       "repeatable": false,
       "required": true
     }
