@@ -32,6 +32,12 @@
     },
     "bankDetails": {
       "type": "richtext"
+    },
+    "baseShippingAdvice": {
+      "type": "string"
+    },
+    "localShippingAdvice": {
+      "type": "string"
     }
   },
   "config": {}
