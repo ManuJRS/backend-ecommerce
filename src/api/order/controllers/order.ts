@@ -202,7 +202,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
   
   // 1. Crear Intento de Pago
   async createPaymentIntent(ctx) {
-    const { paymentMethod, items, shippingAddress, contact, shippingRateId } = ctx.request.body as any;
+    const { paymentMethod, items, shippingAddress, contact, shippingRateId, shippingMethods } = ctx.request.body as any;
     const uids = Object.keys(strapi.contentTypes);
     console.log('📋 UIDs disponibles en Strapi:', uids.filter(u => u.includes('product')));
 
@@ -232,7 +232,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
 
       // 2. Configuración del carrito (envío: shippingConfiguration)
       const cartConfig = (await strapi.documents('api::cart-config.cart-config').findFirst({
-        populate: ['shippingConfiguration', 'SummaryResume'],
+        populate: ['shippingConfiguration', 'SummaryResume', 'shippingMethods'],
       })) as any;
 
       const shipCfg = cartConfig?.shippingConfiguration ?? {};
@@ -406,6 +406,7 @@ let shippingCost = 0;
         
         return ctx.send({
           documentId: nuevaOrden.documentId,
+          bankTitle: cartConfig?.shippingMethods?.BankTransferTitle || 'Transferencia Bancaria',
           bankDetails: cartConfig?.shippingMethods?.bankDetails || 'Datos no configurados'
         });
       }
