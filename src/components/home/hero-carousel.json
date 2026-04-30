@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_home_hero_carousels",
+  "info": {
+    "displayName": "heroCarousel",
+    "icon": "bell"
+  },
+  "options": {},
+  "attributes": {
+    "heroCarouselTitle": {
+      "type": "string"
+    },
+    "heroCarouselButtonText": {
+      "type": "string"
+    },
+    "heroCarouselButtonLink": {
+      "type": "string"
+    },
+    "heroCarouselText": {
+      "type": "text"
+    },
+    "heroCarouselButtonMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "productCarouselRelation": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product"
+    }
+  },
+  "config": {}
+}

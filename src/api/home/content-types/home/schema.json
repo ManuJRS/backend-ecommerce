@@ -17,7 +17,7 @@
     "homeSection": {
       "type": "dynamiczone",
       "components": [
-        "blocks.dynamic-hero"
+        "home.hero-home"
       ]
     }
   }
