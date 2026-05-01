@@ -1,0 +1,45 @@
+{
+  "collectionName": "components_home_grid_homes",
+  "info": {
+    "displayName": "gridHome"
+  },
+  "options": {},
+  "attributes": {
+    "griManual": {
+      "type": "component",
+      "component": "home.gri-manual",
+      "repeatable": true
+    },
+    "gridTitle": {
+      "type": "string"
+    },
+    "gridButtonText": {
+      "type": "string"
+    },
+    "gridButtonLink": {
+      "type": "string"
+    },
+    "gridRelation": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::category.category"
+    },
+    "gridRelationButtonText": {
+      "type": "string"
+    },
+    "girdText": {
+      "type": "string"
+    },
+    "gridMode": {
+      "type": "enumeration",
+      "enum": [
+        "Auto",
+        "Manual"
+      ]
+    },
+    "gridBackground": {
+      "type": "boolean"
+    }
+  },
+  "config": {}
+}
