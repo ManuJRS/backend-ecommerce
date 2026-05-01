@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_home_gri_manuals",
+  "info": {
+    "displayName": "griManual",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "gridManualTitle": {
+      "type": "string"
+    },
+    "gridManualButtonText": {
+      "type": "string"
+    },
+    "gridManualButtonLink": {
+      "type": "string"
+    },
+    "gridManualImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    }
+  },
+  "config": {}
+}
