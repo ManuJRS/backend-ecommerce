@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_footer_footer_columns",
+  "info": {
+    "displayName": "footerColumn",
+    "icon": "database"
+  },
+  "options": {},
+  "attributes": {
+    "footerColumnTitle": {
+      "type": "string"
+    },
+    "footerLink": {
+      "type": "component",
+      "component": "footer.menu-footer-link",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

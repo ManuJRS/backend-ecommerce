@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_footer_footer_maps",
+  "info": {
+    "displayName": "footerMap",
+    "icon": "cast"
+  },
+  "options": {},
+  "attributes": {
+    "showMap": {
+      "type": "boolean"
+    },
+    "title": {
+      "type": "string"
+    },
+    "advice": {
+      "type": "string"
+    },
+    "iframe": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}
