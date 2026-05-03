@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_newsletter_forms",
+  "info": {
+    "displayName": "newsletterForm",
+    "icon": "earth"
+  },
+  "options": {},
+  "attributes": {
+    "newsletterSpan": {
+      "type": "string"
+    },
+    "newsletterTitle": {
+      "type": "string"
+    },
+    "newsletterInputText": {
+      "type": "string"
+    },
+    "newsletterButtonText": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
