@@ -1,0 +1,44 @@
+{
+  "collectionName": "components_shared_intros",
+  "info": {
+    "displayName": "intro",
+    "icon": "filter"
+  },
+  "options": {},
+  "attributes": {
+    "introSpan": {
+      "type": "string"
+    },
+    "introTitle": {
+      "type": "string"
+    },
+    "introText": {
+      "type": "string"
+    },
+    "introButtonText": {
+      "type": "string"
+    },
+    "introButtonLink": {
+      "type": "string"
+    },
+    "introBackground": {
+      "type": "boolean"
+    },
+    "introAlignment": {
+      "type": "enumeration",
+      "enum": [
+        "Left",
+        "Center",
+        "Right"
+      ]
+    },
+    "introPaddingY": {
+      "type": "enumeration",
+      "enum": [
+        "normal",
+        "double"
+      ]
+    }
+  },
+  "config": {}
+}

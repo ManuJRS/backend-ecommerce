@@ -1,0 +1,51 @@
+{
+  "collectionName": "components_shared_cards",
+  "info": {
+    "displayName": "card",
+    "icon": "book"
+  },
+  "options": {},
+  "attributes": {
+    "cardText": {
+      "type": "string"
+    },
+    "cardTitle": {
+      "type": "string"
+    },
+    "cardSpan": {
+      "type": "string"
+    },
+    "cardMedia": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "cardButtonText": {
+      "type": "string"
+    },
+    "cardButtonLink": {
+      "type": "string"
+    },
+    "cardButtonRelationProduct": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product"
+    },
+    "cardBackground": {
+      "type": "boolean"
+    },
+    "cardAlignment": {
+      "type": "enumeration",
+      "enum": [
+        "Left",
+        "Right"
+      ]
+    }
+  },
+  "config": {}
+}
