@@ -18,7 +18,10 @@
       "type": "dynamiczone",
       "components": [
         "home.hero-home",
-        "home.grid-home"
+        "home.grid-home",
+        "shared.card",
+        "shared.intro",
+        "shared.newsletter-form"
       ]
     }
   }
