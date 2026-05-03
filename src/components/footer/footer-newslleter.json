@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_footer_footer_newslleters",
+  "info": {
+    "displayName": "footerNewslleter",
+    "icon": "attachment"
+  },
+  "options": {},
+  "attributes": {
+    "showNewslleter": {
+      "type": "boolean"
+    },
+    "newslleterTitle": {
+      "type": "string"
+    },
+    "newslleterInputText": {
+      "type": "string"
+    },
+    "newslleterAdvice": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_footer_social_media_links",
+  "info": {
+    "displayName": "socialMediaLinks"
+  },
+  "options": {},
+  "attributes": {
+    "svg": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "link": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
