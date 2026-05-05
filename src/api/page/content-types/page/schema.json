@@ -22,9 +22,7 @@
       "type": "dynamiczone",
       "components": [
         "shared.card",
-        "shared.intro",
-        "home.hero-home",
-        "home.hero-carousel"
+        "shared.intro"
       ]
     },
     "seo": {
