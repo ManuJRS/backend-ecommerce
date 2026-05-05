@@ -1,0 +1,79 @@
+{
+  "collectionName": "components_shared_grio_prioducts",
+  "info": {
+    "displayName": "gridProduct",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "buttonText": {
+      "type": "string"
+    },
+    "buttonLink": {
+      "type": "string"
+    },
+    "dataSource": {
+      "type": "enumeration",
+      "enum": [
+        "all_products",
+        "by_category",
+        "manual_selection"
+      ]
+    },
+    "category": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::category.category"
+    },
+    "manualProducts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
+    },
+    "badgeFormat": {
+      "type": "enumeration",
+      "enum": [
+        "percentage",
+        "amount",
+        "text_only"
+      ]
+    },
+    "itemsLimit": {
+      "type": "integer"
+    },
+    "showItemsQuantity": {
+      "type": "boolean"
+    },
+    "showCalification": {
+      "type": "boolean"
+    },
+    "showDiscountBadge": {
+      "type": "boolean"
+    },
+    "showDescription": {
+      "type": "boolean"
+    },
+    "showCategory": {
+      "type": "boolean"
+    },
+    "showFavIcon": {
+      "type": "boolean"
+    },
+    "background": {
+      "type": "boolean"
+    },
+    "autoTransition": {
+      "type": "boolean"
+    },
+    "showChevron": {
+      "type": "boolean"
+    }
+  },
+  "config": {}
+}

@@ -21,7 +21,8 @@
         "home.grid-home",
         "shared.card",
         "shared.intro",
-        "shared.newsletter-form"
+        "shared.newsletter-form",
+        "shared.grio-prioduct"
       ]
     }
   }
