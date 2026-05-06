@@ -1,0 +1,62 @@
+{
+  "collectionName": "components_shared_heroes",
+  "info": {
+    "displayName": "hero",
+    "icon": "landscape"
+  },
+  "options": {},
+  "attributes": {
+    "heroMode": {
+      "type": "enumeration",
+      "enum": [
+        "normal",
+        "carrousel"
+      ]
+    },
+    "heroTitle": {
+      "type": "string"
+    },
+    "heroSpan": {
+      "type": "string"
+    },
+    "heroText": {
+      "type": "string"
+    },
+    "heroButtonText": {
+      "type": "string"
+    },
+    "heroButtonLink": {
+      "type": "string"
+    },
+    "overlayHero": {
+      "type": "boolean"
+    },
+    "height": {
+      "type": "enumeration",
+      "enum": [
+        "Full",
+        "Medium"
+      ]
+    },
+    "productRelation": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product"
+    },
+    "heroMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "heroCarousel": {
+      "type": "component",
+      "component": "shared.carousel",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

@@ -45,6 +45,11 @@
         "Left",
         "Right"
       ]
+    },
+    "cardButtonRelationPages": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::page.page"
     }
   },
   "config": {}
