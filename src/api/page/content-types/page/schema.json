@@ -22,7 +22,8 @@
       "type": "dynamiczone",
       "components": [
         "shared.card",
-        "shared.intro"
+        "shared.intro",
+        "shared.hero"
       ]
     },
     "seo": {
