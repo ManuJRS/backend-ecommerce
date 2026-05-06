@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_shared_carousels",
+  "info": {
+    "displayName": "carousel",
+    "icon": "bell"
+  },
+  "options": {},
+  "attributes": {
+    "carouselTitle": {
+      "type": "string"
+    },
+    "carouselButtonText": {
+      "type": "string"
+    },
+    "carouselButtonLink": {
+      "type": "string"
+    },
+    "carouselText": {
+      "type": "text"
+    },
+    "carouselMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "productCarouselRelation": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product"
+    }
+  },
+  "config": {}
+}
