@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_shared_grids",
+  "info": {
+    "displayName": "grid",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "gridTitle": {
+      "type": "string"
+    },
+    "gridButtonText": {
+      "type": "string"
+    },
+    "gridButtonLink": {
+      "type": "string"
+    },
+    "gridRelation": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::category.category"
+    },
+    "gridRelationButtonText": {
+      "type": "string"
+    },
+    "girdText": {
+      "type": "string"
+    },
+    "gridMode": {
+      "type": "enumeration",
+      "enum": [
+        "Auto",
+        "Manual"
+      ]
+    },
+    "gridBackground": {
+      "type": "boolean"
+    },
+    "gridManual": {
+      "type": "component",
+      "component": "shared.grid-manual",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}
