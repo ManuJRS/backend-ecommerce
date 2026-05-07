@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_grid_blogs",
+  "info": {
+    "displayName": "gridBlog",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "mode": {
+      "type": "enumeration",
+      "enum": [
+        "manual",
+        "auto"
+      ]
+    },
+    "blogManual": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::post.post"
+    }
+  },
+  "config": {}
+}

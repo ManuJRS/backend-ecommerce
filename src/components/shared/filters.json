@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_filters",
+  "info": {
+    "displayName": "filters",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "span": {
+      "type": "string"
+    },
+    "blogCategory": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::blog-category.blog-category"
+    }
+  },
+  "config": {}
+}
