@@ -23,7 +23,11 @@
       "components": [
         "shared.card",
         "shared.intro",
-        "shared.hero"
+        "shared.hero",
+        "shared.grid",
+        "shared.grio-prioduct",
+        "shared.newsletter-form",
+        "shared.map"
       ]
     },
     "seo": {

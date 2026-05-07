@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_shared_map_dropdown_items",
+  "info": {
+    "displayName": "mapDropdownItems",
+    "icon": "arrowDown"
+  },
+  "options": {},
+  "attributes": {
+    "item": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

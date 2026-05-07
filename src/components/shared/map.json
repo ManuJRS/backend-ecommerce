@@ -1,0 +1,45 @@
+{
+  "collectionName": "components_shared_maps",
+  "info": {
+    "displayName": "map",
+    "icon": "earth"
+  },
+  "options": {},
+  "attributes": {
+    "iframe": {
+      "type": "text"
+    },
+    "span": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "locationTitle": {
+      "type": "string"
+    },
+    "locationDescription": {
+      "type": "text"
+    },
+    "contactTitle": {
+      "type": "string"
+    },
+    "background": {
+      "type": "boolean"
+    },
+    "contactItems": {
+      "type": "component",
+      "component": "shared.map-dropdown-items",
+      "repeatable": true
+    },
+    "scheduleTitle": {
+      "type": "string"
+    },
+    "scheduleItems": {
+      "type": "component",
+      "component": "shared.schedule-items",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

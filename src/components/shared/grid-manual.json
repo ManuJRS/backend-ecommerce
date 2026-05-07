@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_shared_grid_manuals",
+  "info": {
+    "displayName": "gridManual"
+  },
+  "options": {},
+  "attributes": {
+    "gridManualTitle": {
+      "type": "string"
+    },
+    "gridManualButtonText": {
+      "type": "string"
+    },
+    "gridManualButtonLink": {
+      "type": "string"
+    },
+    "gridManualImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    }
+  },
+  "config": {}
+}
