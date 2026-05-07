@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_shared_featured_blogs",
+  "info": {
+    "displayName": "featuredBlog",
+    "icon": "chartBubble"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "post": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::post.post"
+    }
+  },
+  "config": {}
+}
