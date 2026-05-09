@@ -1,0 +1,44 @@
+{
+  "collectionName": "components_shared_contact_forms",
+  "info": {
+    "displayName": "contactForm",
+    "icon": "feather"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "nameLabel": {
+      "type": "string"
+    },
+    "namePlaceholder": {
+      "type": "string"
+    },
+    "emailLabel": {
+      "type": "string"
+    },
+    "emailPlaceholder": {
+      "type": "string"
+    },
+    "subjectLabel": {
+      "type": "string"
+    },
+    "subjectPlaceholder": {
+      "type": "string"
+    },
+    "messageLabel": {
+      "type": "string"
+    },
+    "messagePlaceholder": {
+      "type": "string"
+    },
+    "buttonText": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
