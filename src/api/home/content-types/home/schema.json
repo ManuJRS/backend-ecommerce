@@ -22,7 +22,8 @@
         "shared.card",
         "shared.intro",
         "shared.newsletter-form",
-        "shared.grio-prioduct"
+        "shared.grio-prioduct",
+        "shared.contact-form"
       ]
     }
   }
