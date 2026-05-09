@@ -25,7 +25,8 @@
         "shared.grio-prioduct",
         "shared.featured-blog",
         "shared.grid-blog",
-        "shared.filters"
+        "shared.filters",
+        "shared.contact-form"
       ]
     },
     "seo": {
