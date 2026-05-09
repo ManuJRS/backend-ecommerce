@@ -27,7 +27,8 @@
         "shared.grid",
         "shared.grio-prioduct",
         "shared.newsletter-form",
-        "shared.map"
+        "shared.map",
+        "shared.contact-form"
       ]
     },
     "seo": {
