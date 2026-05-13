@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "whats_app_configs",
+  "info": {
+    "singularName": "whats-app-config",
+    "pluralName": "whats-app-configs",
+    "displayName": "WhatsAppConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "phoneNumber": {
+      "type": "string"
+    },
+    "floatingMessage": {
+      "type": "string"
+    },
+    "defaultApiMessage": {
+      "type": "text"
+    },
+    "isActive": {
+      "type": "boolean"
+    }
+  }
+}
