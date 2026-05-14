@@ -51,15 +51,15 @@ async function calculateFinalShipping(strapi: any, items: any[], zipCode: string
   const allowedPrefixes = config?.shippingMethods?.localZipCodes?.split(',').map((z: string) => z.trim()) || [];
   const isMatch = allowedPrefixes.some((prefix: string) => cleanZip.startsWith(prefix));
 
-  if (isLocalEnabled && isMatch) {
-    finalRates.push({
-      id: 'local_delivery',
-      carrier: 'Entrega Local',
-      service: 'Reparto a domicilio (Mérida)',
-      price: Number(config?.shippingMethods?.localShippingCost || 0),
-      days: '1-2'
-    });
-  }
+  // if (isLocalEnabled && isMatch) {
+  //   finalRates.push({
+  //     id: 'local_delivery',
+  //     carrier: 'Entrega Local',
+  //     service: 'Reparto a domicilio (Mérida)',
+  //     price: Number(config?.shippingMethods?.localShippingCost || 0),
+  //     days: '1-2'
+  //   });
+  // }
 
   // 3. ENVIOCLICK API
   if (config?.shippingMethods?.enableEnvioclick) {
@@ -100,8 +100,12 @@ async function calculateFinalShipping(strapi: any, items: any[], zipCode: string
          maxLength = Math.max(maxLength, length);
       }
 
+      const originZip =
+        String(config?.shippingMethods?.originZip || process.env.ENVIOCLICK_ORIGIN_ZIP || '97000').trim() ||
+        '97000';
+
       const response = await axios.post('https://api.envioclickpro.com/api/v2/quotation', {
-        origin_zip_code: "97000",
+        origin_zip_code: originZip,
         destination_zip_code: String(cleanZip),
         origin_address: "Centro", origin_number: "1", origin_suburb: "Centro",
         destination_address: "Conocido", destination_number: "1", destination_suburb: "Centro",
