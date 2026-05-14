@@ -38,6 +38,9 @@
     },
     "localShippingAdvice": {
       "type": "string"
+    },
+    "originZip": {
+      "type": "string"
     }
   },
   "config": {}
